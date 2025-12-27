@@ -1,10 +1,44 @@
-# Sudoku — Gaming Hub
+# Gaming Hub
 
-Minimal Vite + React + TypeScript scaffold for a Sudoku game.
+A collection of classic puzzle and logic games built with React + TypeScript + Vite. Features modern UI, mobile-responsive design, and smooth gameplay.
+
+🎮 **Live Demo:** [https://gaming-hub-mu.vercel.app](https://gaming-hub-mu.vercel.app)
+
+## Games
+
+### 🔢 Sudoku
+Complete the 9×9 grid with numbers 1-9 following classic Sudoku rules. Features include:
+- Multiple difficulty levels (Easy, Medium, Hard)
+- Pencil/Notes mode for candidate numbers
+- Hint system with optional auto-notes
+- Undo/Redo functionality
+- Real-time validation with conflict highlighting
+- Timer with pause/resume
+- Save/Load game state
+
+### 💣 Minesweeper
+Classic mine-sweeping game with three difficulty levels:
+- Beginner (9×9, 10 mines)
+- Intermediate (16×16, 40 mines)
+- Expert (16×30, 99 mines)
+- Flag mode for marking suspected mines
+- Timer and mine counter
+
+### 🎲 2048
+Slide numbered tiles to combine them and reach 2048:
+- Smooth animations
+- Score tracking with best score
+- Undo moves
+- New game at any time
+
+### 🔤 Wordle
+Guess the 5-letter word in 6 attempts:
+- Color-coded feedback (correct, present, absent)
+- Keyboard highlighting
+- Statistics tracking
+- Streak counter
 
 ## Setup
-
-Open a PowerShell terminal in the project root and run:
 
 ```powershell
 npm install
@@ -14,23 +48,23 @@ npm run dev
 - `npm run dev` — start the dev server (Vite)
 - `npm run build` — build for production
 - `npm run preview` — preview production build
+- `npm test` — run unit tests (Vitest)
+- `npm run test:e2e` — run end-to-end tests (Playwright)
 
-I'll implement the Sudoku generator, solver, UI features, and tests next. If you want a specific feature first (pencil mode, hints, difficulty selector), tell me and I'll prioritize it.
-## Controls added
+## Features
 
-- `Hint` — fills one random empty cell with the correct value.
-- `Check` — validates the current board against the solution.
-- `Save` / `Load` — save current board to `localStorage` and restore it.
-- `Reset` — reset the current puzzle to its initial state.
+- 🎨 **Theme Switcher** — Light and Dark modes
+- 📱 **Mobile Responsive** — Optimized for all screen sizes
+- ⚡ **Fast & Modern** — Built with Vite for instant HMR
+- 💾 **Persistent State** — Game progress saved to localStorage
+- ⌨️ **Keyboard Controls** — Full keyboard support for all games
+- 🧪 **Tested** — Unit and E2E tests included
 
-Validation: the UI now marks conflicting cells in red if a move creates a conflict. Fixed cells (from the generated puzzle) cannot be changed.
-Blocking invalid moves: the UI now prevents entering numbers that would create conflicts. If you attempt an invalid move the cell briefly flashes red.
+## Tech Stack
 
-Pencil / Notes mode:
-
-- Toggle pencil mode with the `Pencil: ON/OFF` button in the controls or by pressing the `P` key. While pencil mode is active, typing `1`–`9` will add/remove small candidate notes in the selected cell instead of filling it.
-- Use Backspace/Delete while in pencil mode to clear notes for the selected cell.
-
-Undo / Redo:
-
-- Use the `Undo` and `Redo` buttons to step backward/forward through your recent moves (numbers and notes). You can also use `Ctrl+Z` / `Ctrl+Y` for keyboard shortcuts.
+- **React 19** — UI framework
+- **TypeScript** — Type safety
+- **Vite** — Build tool and dev server
+- **Vitest** — Unit testing
+- **Playwright** — E2E testing
+- **Vercel** — Deployment and hosting
