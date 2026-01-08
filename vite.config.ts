@@ -6,5 +6,6 @@ export default defineConfig(async () => {
   const react = reactPluginModule.default || reactPluginModule
   return {
     plugins: [react()],
+    base: '/gaming-hub/',
   }
 })
