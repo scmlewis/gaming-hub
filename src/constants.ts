@@ -18,6 +18,10 @@ export const STORAGE_KEYS = {
   FIXED_CELL_STYLE: 'fixedCellStyle',
   PEER_HIGHLIGHT: 'peerHighlight',
   LARGE_FONT: 'largeFont',
+  MINESWEEPER_CUSTOM: 'minesweeper-custom-config',
+  GAME_2048_THEME: '2048-tile-theme',
+  GAME_2048_BEST: '2048-best',
+  WORDLE_LANGUAGE: 'wordle-language',
 } as const
 
 export const DEFAULT_VALUES = {
@@ -37,4 +41,7 @@ export const CLUES_BY_DIFFICULTY_9X9 = {
 
 export const MAX_HISTORY_SIZE = 100
 export const MAX_SAVE_FILE_SIZE = 100 * 1024 // 100KB
+export const MAX_MOVE_HISTORY = 100 // Max moves to store for 2048 replay
+export const MINESWEEPER_MAX_ROWS = 50
+export const MINESWEEPER_MAX_COLS = 50
 

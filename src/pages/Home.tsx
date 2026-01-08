@@ -5,7 +5,7 @@ const games = [
   {
     id: 'sudoku',
     title: 'Sudoku',
-    description: 'Fill the 9×9 grid so every row, column, and box contains 1-9. Train your logic skills!',
+    description: 'Fill the grid so every row, column, and box contains unique numbers. Choose from 6×6 or 9×9 puzzles!',
     icon: '🧩',
     to: '/sudoku',
     color: '#8b5cf6'

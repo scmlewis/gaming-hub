@@ -1054,6 +1054,8 @@ select option {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   margin: 0 auto;
+  touch-action: none; /* Prevent default touch scrolling */
+  user-select: none; /* Prevent text selection during swipes */
 }
 
 [data-theme="dark"] .game-2048-grid,
@@ -1127,6 +1129,48 @@ select option {
   0% { transform: scale(1); }
   50% { transform: scale(1.15); }
   100% { transform: scale(1); }
+}
+
+.game-hint {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #000;
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+
+.hint-arrow {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 4px;
+}
+
+.hint-close {
+  position: absolute;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border: none;
+  color: #000;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.hint-close:hover {
+  background: rgba(0, 0, 0, 0.3);
 }
 
 /* =====================================================
@@ -1559,7 +1603,20 @@ select option {
   }
   
   .game-card {
-    padding: 24px;
+    padding: 20px;
+    padding-right: 64px;
+  }
+  
+  .game-card-arrow {
+    right: 20px;
+    bottom: 20px;
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+  
+  .game-card-content p {
+    margin-right: 0;
   }
   
   .game-layout {
@@ -1629,10 +1686,19 @@ select option {
   }
   
   /* Minesweeper */
+  .minesweeper-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+  }
+  
   .minesweeper-grid {
-    --mine-cell-size: 32px;
-    gap: 3px;
+    --mine-cell-size: min(32px, calc((100vw - 80px) / var(--grid-cols, 16)));
+    gap: 2px;
     padding: 12px;
+    justify-self: center;
   }
   
   .minesweeper-stats {
@@ -1646,6 +1712,14 @@ select option {
   
   .stat-value {
     font-size: 18px;
+  }
+  
+  .desktop-only {
+    display: none;
+  }
+  
+  .mobile-only {
+    display: inline;
   }
   
   /* 2048 */
@@ -1765,6 +1839,11 @@ select option {
     gap: 2px;
   }
   
+  /* Minesweeper even smaller cells for very small screens */
+  .minesweeper-grid {
+    --mine-cell-size: min(28px, calc((100vw - 60px) / var(--grid-cols, 16)));
+  }
+  
   .row {
     gap: 2px;
   }
@@ -1830,6 +1909,15 @@ select option {
     min-width: 48px;
     font-size: 10px;
   }
+}
+
+/* Instructions visibility */
+.desktop-only {
+  display: inline;
+}
+
+.mobile-only {
+  display: none;
 }
 
 /* Light theme specific adjustments */

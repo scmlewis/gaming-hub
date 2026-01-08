@@ -1,0 +1,69 @@
+// Spanish word list for Wordle (normalized, no accents)
+// 5-letter common Spanish words
+
+export const WORD_LIST_ES = [
+  'ABAJO', 'ABISL', 'ABONO', 'ABRIL', 'ABRIR', 'ABUELO', 'ABUSO', 'ACABO', 'ACASO', 'ACCIO',
+  'ACEIT', 'ACERO', 'ACIDO', 'ACOGE', 'ACORD', 'ACRES', 'ACTAS', 'ACTIV', 'ACTOS', 'ACTUA',
+  'ACUDE', 'ACUSA', 'ADAPT', 'ADDON', 'ADIOS', 'ADJUN', 'ADMIN', 'ADMIR', 'ADOBE', 'ADOPT',
+  'ADORN', 'ADOSA', 'ADQUI', 'ADUAN', 'ADULT', 'AEREO', 'AFECT', 'AFEIT', 'AFGAN', 'AFICH',
+  'AFLIJ', 'AFORO', 'AFRIC', 'AFUER', 'AGACH', 'AGARE', 'AGENT', 'AGITA', 'AGOBIO', 'AGONI',
+  'AGOST', 'AGOTA', 'AGRAD', 'AGRAR', 'AGREG', 'AGRES', 'AGRIO', 'AGROP', 'AGRUP', 'AGUAS',
+  'AGUIJ', 'AGUJA', 'AGUZA', 'AHOGA', 'AHONDAR', 'AHORA', 'AHORA', 'AHORR', 'AIRES', 'AJENO',
+  'AJUST', 'ALABA', 'ALADO', 'ALARM', 'ALBAS', 'ALBUM', 'ALCAL', 'ALCOH', 'ALDEA', 'ALEGR',
+  'ALEJA', 'ALEMA', 'ALERT', 'ALETA', 'ALFIL', 'ALFOM', 'ALGAS', 'ALGUN', 'ALIAS', 'ALICA',
+  'ALIEN', 'ALIME', 'ALINE', 'ALISA', 'ALIVI', 'ALLAL', 'ALLEG', 'ALMAS', 'ALMAC', 'ALMER',
+  'ALOJA', 'ALQUI', 'ALTAR', 'ALTER', 'ALTOS', 'ALTURA', 'ALUMB', 'ALUMN', 'ALUSI', 'ALZAN',
+  'AMABA', 'AMADA', 'AMAGO', 'AMAIN', 'AMANE', 'AMANT', 'AMARG', 'AMASA', 'AMBIE', 'AMBOS',
+  'AMBUL', 'AMENA', 'AMERI', 'AMIGA', 'AMINO', 'AMIST', 'AMNIST', 'AMOLD', 'AMONE', 'AMORF',
+  'AMORT', 'AMPAR', 'AMPLI', 'AMPOL', 'ANALI', 'ANCHA', 'ANCLA', 'ANDAL', 'ANDEN', 'ANDIN',
+  'ANEST', 'ANEXA', 'ANGEL', 'ANGLI', 'ANGUL', 'ANGUST', 'ANILL', 'ANIMA', 'ANIMO', 'ANIMA',
+  'ANISI', 'ANODE', 'ANORM', 'ANOTA', 'ANSIA', 'ANTES', 'ANTIC', 'ANTOF', 'ANUAL', 'ANUDA',
+  'ANULA', 'ANUNC', 'AOJOS', 'APAGA', 'APARE', 'APART', 'APEAL', 'APEAS', 'APEGA', 'APELA',
+  'APENA', 'APEND', 'APERO', 'APEST', 'APETO', 'APICE', 'APILA', 'APIOL', 'APITA', 'APLAZ',
+  'APLIC', 'APODA', 'APODO', 'APOGA', 'APOLT', 'APORT', 'APOSA', 'APOST', 'APOYA', 'APOYA',
+  'APREC', 'APREH', 'APREN', 'APRES', 'APRET', 'APRIS', 'APROB', 'APROF', 'APROPA', 'APROPI',
+  'APROV', 'APTO', 'APUES', 'APUNT', 'APURA', 'AQUEI', 'AQUEJ', 'AQUEL', 'ARABE', 'ARADO',
+  'ARAN', 'ARARE', 'ARBOL', 'ARCAI', 'ARCEN', 'ARCHI', 'ARCIA', 'ARCON', 'ARDEN', 'ARDID',
+  'ARENA', 'ARENT', 'ARETE', 'ARGEN', 'ARGEN', 'ARGOL', 'ARGOT', 'ARGU', 'ARGUM', 'ARIDE',
+  'ARIST', 'ARMAS', 'ARMON', 'ARNEE', 'ARNES', 'ARNIE', 'AROCA', 'AROMO', 'ARPON', 'ARQUE',
+  'ARRAN', 'ARRAS', 'ARREAR', 'ARREI', 'ARRES', 'ARRIA', 'ARRIM', 'ARRIO', 'ARROB', 'ARROG',
+  'ARROP', 'ARROS', 'ARROY', 'ARROZ', 'ARRUG', 'ARSEN', 'ARTER', 'ARTIC', 'ARTIS', 'ASADO',
+  'ASALT', 'ASARI', 'ASATE', 'ASCEN', 'ASCOS', 'ASEAD', 'ASECT', 'ASEGU', 'ASEME', 'ASENT',
+  'ASEOS', 'ASEPT', 'ASERT', 'ASES', 'ASESO', 'ASEST', 'ASFAL', 'ASFIX', 'ASIAT', 'ASIDO',
+  'ASIEN', 'ASIGN', 'ASILO', 'ASIMIL', 'ASINO', 'ASIST', 'ASNAL', 'ASOCI', 'ASOLA', 'ASOMB',
+  'ASOMO', 'ASPAR', 'ASPEA', 'ASPER', 'ASPID', 'ASPIR', 'ASTIL', 'aSTRO', 'ASTUT', 'ASUME',
+  'ASUNT', 'ASUST', 'ATACA', 'ATADO', 'ATAJA', 'ATALA', 'ATANE', 'ATARD', 'ATARE', 'ATAUD',
+  'ATAVI', 'ATAZA', 'ATEDI', 'ATEMO', 'ATENC', 'ATEND', 'ATENE', 'ATENT', 'ATENU', 'ATEOS',
+  'ATERR', 'ATESE', 'ATESO', 'ATEST', 'ATIBI', 'ATIEZ', 'ATINA', 'ATIPO', 'ATISA', 'ATIZA',
+  'ATLAS', 'ATLET', 'ATOMO', 'ATONA', 'ATONI', 'ATOR', 'ATORA', 'ATORM', 'ATORO', 'ATORT',
+  'ATOSI', 'ATRAC', 'ATRAF', 'ATRAI', 'ATRAN', 'ATRA', 'ATRAS', 'ATRAV', 'ATREB', 'ATREG',
+  'ATREVI', 'ATREV', 'ATRIB', 'ATRIC', 'ATRIL', 'ATRIO', 'ATROP', 'ATROZ', 'ATUFA', 'ATUFO',
+  'ATUIN', 'ATUND', 'ATURD', 'ATUSA', 'AUDAC', 'AUDAZ', 'AUDIO', 'AUDIG', 'AUDIR', 'AUDIT',
+  'AUGES', 'AUGUR', 'AULAS', 'AULLA', 'AULLO', 'AUMEN', 'AUNQU', 'AUPAR', 'AUREA', 'AURIO',
+  'AURER', 'AURIG', 'AUROR', 'AUSBI', 'AUSEH', 'AUSEN', 'AUSPI', 'AUSTE', 'AUSTR', 'AUTOR',
+  'AVALA', 'AVANC', 'AVANL', 'AVANZ', 'AVARO', 'AVASA', 'AVECE', 'AVECIN', 'AVEJA', 'AVELL',
+  'AVENA', 'AVENE', 'AVENG', 'AVENI', 'AVENS', 'AVENU', 'AVERG', 'AVERI', 'AVERS', 'AVESA',
+  'AVEZA', 'AVIAD', 'AVIAR', 'AVIDA', 'AVIDE', 'AVIEZ', 'AVILI', 'AVINE', 'AVION', 'AVISA',
+  'AVISO', 'AVIVA', 'AVIZA', 'AYONE', 'AYORA', 'AYUDA', 'AYUDO', 'AYUNO', 'AZADA', 'AZAFA',
+  'AZARA', 'AZARA', 'AZARE', 'AZARO', 'AZARU', 'AZOAS', 'AZOCA', 'AZOGA', 'AZOLA', 'AZOMB',
+  'AZORA', 'AZORE', 'AZORO', 'AZOTA', 'AZOTE', 'AZOTO', 'AZTEC', 'AZUAR', 'AZUCA', 'AZUFR',
+  'AZULA', 'AZUMB', 'AZURA', 'BABEA', 'BABEL', 'BABIA', 'BABOR', 'BACHE', 'BACON', 'BACUL',
+  'BAEZA', 'BAGAR', 'BAGRE', 'BAHIA', 'BAILA', 'BAILE', 'BAJOS', 'BALAD', 'BALAN', 'BALAS',
+  'BALAU', 'BALAZ', 'BALBU', 'BALCO', 'BALDE', 'BALDO', 'BALEA', 'BALEO', 'BALIZ', 'BALMA',
+  'BALON', 'BALOT', 'BALSA', 'BAMBA', 'BAMBU', 'BANAL', 'BANCA', 'BANCO', 'BANDA', 'BANDO',
+  'BANIR', 'BANJA', 'BANJO', 'BAÑOS', 'BAQUE', 'BARAJ', 'BARAT', 'BARBA', 'BARBO', 'BARCA'
+]
+
+export const KEYBOARD_ROWS_ES = [
+  ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+  ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Ñ'],
+  ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', '⌫']
+]
+
+export function getRandomWordES(): string {
+  return WORD_LIST_ES[Math.floor(Math.random() * WORD_LIST_ES.length)]
+}
+
+export function isValidWordES(word: string): boolean {
+  return WORD_LIST_ES.includes(word.toUpperCase())
+}

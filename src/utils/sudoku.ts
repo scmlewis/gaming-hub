@@ -1,4 +1,5 @@
 // Minimal Sudoku utilities: placeholders for generator and solver
+import seedrandom from 'seedrandom'
 
 export type Grid = (number | null)[][]
 
@@ -103,15 +104,15 @@ function countSolutions(grid: Grid, limit = 2): number {
   return count
 }
 
-function shuffle<T>(arr: T[]): T[] {
+function shuffle<T>(arr: T[], rng: () => number): T[] {
   for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
+    const j = Math.floor(rng() * (i + 1))
     ;[arr[i], arr[j]] = [arr[j], arr[i]]
   }
   return arr
 }
 
-function generateFullSolution(n = 9, blockRows?: number, blockCols?: number): Grid {
+function generateFullSolution(n = 9, blockRows?: number, blockCols?: number, rng: () => number = Math.random): Grid {
   const grid: Grid = Array.from({ length: n }, () => Array(n).fill(null))
   const br = blockRows ?? (n === 6 ? 2 : Math.floor(Math.sqrt(n)))
   const bc = blockCols ?? (n === 6 ? 3 : Math.floor(Math.sqrt(n)))
@@ -120,7 +121,7 @@ function generateFullSolution(n = 9, blockRows?: number, blockCols?: number): Gr
     const empty = findEmpty(grid)
     if (!empty) return true
     const [r, c] = empty
-    const nums = shuffle(Array.from({ length: n }, (_, i) => i + 1))
+    const nums = shuffle(Array.from({ length: n }, (_, i) => i + 1), rng)
     for (const num of nums) {
       if (isValidMove(grid, r, c, num)) {
         grid[r][c] = num
@@ -143,13 +144,22 @@ import { CLUES_BY_DIFFICULTY_9X9 } from '../constants'
  *
  * @param difficulty - The difficulty level ('easy', 'medium', or 'hard')
  * @param size - The grid size (6 or 9)
- * @returns A 2D array representing the puzzle grid (null for empty cells)
+ * @param seed - Optional seed for deterministic puzzle generation
+ * @returns An object containing the puzzle grid and the seed used
  */
-export function generateSudoku(difficulty: 'easy' | 'medium' | 'hard' = 'easy', size = 9): Grid {
+export function generateSudoku(
+  difficulty: 'easy' | 'medium' | 'hard' = 'easy', 
+  size = 9,
+  seed?: string
+): { puzzle: Grid; solution: Grid; seed: string } {
+  // Use provided seed or generate new one
+  const usedSeed = seed || Date.now().toString(36) + Math.random().toString(36).substring(2)
+  const rng = seedrandom(usedSeed)
+  
   // Generate a complete solution then remove numbers while keeping uniqueness
   const blockRows = size === 6 ? 2 : Math.floor(Math.sqrt(size))
   const blockCols = size === 6 ? 3 : Math.floor(Math.sqrt(size))
-  const solution = generateFullSolution(size, blockRows, blockCols)
+  const solution = generateFullSolution(size, blockRows, blockCols, rng)
   const puzzle = cloneGrid(solution)
 
   // scale targets for different sizes (heuristic)
@@ -161,7 +171,8 @@ export function generateSudoku(difficulty: 'easy' | 'medium' | 'hard' = 'easy', 
 
   const targetClues = baseTarget
   const positions = shuffle(
-    Array.from({ length: total }, (_, i) => [Math.floor(i / size), i % size] as [number, number])
+    Array.from({ length: total }, (_, i) => [Math.floor(i / size), i % size] as [number, number]),
+    rng
   )
 
   let clues = total
@@ -178,5 +189,5 @@ export function generateSudoku(difficulty: 'easy' | 'medium' | 'hard' = 'easy', 
     }
   }
 
-  return puzzle
+  return { puzzle, solution, seed: usedSeed }
 }

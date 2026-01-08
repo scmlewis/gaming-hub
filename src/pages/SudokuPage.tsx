@@ -1,14 +1,24 @@
 import React, { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import GameLayout from '../components/GameLayout'
 import Board from '../components/Board'
 import Dropdown from '../components/Dropdown'
 import Settings from '../components/Settings'
 
 export default function SudokuPage() {
-  const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('easy')
-  const [seed, setSeed] = useState(0)
-  const [size, setSize] = useState<6 | 9>(9)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>(() => {
+    const paramDiff = searchParams.get('difficulty')
+    return (paramDiff === 'easy' || paramDiff === 'medium' || paramDiff === 'hard') ? paramDiff : 'easy'
+  })
+  const [seed, setSeed] = useState<string>(() => searchParams.get('seed') || '')
+  const [seedInput, setSeedInput] = useState('')
+  const [size, setSize] = useState<6 | 9>(() => {
+    const paramSize = searchParams.get('size')
+    return paramSize === '6' ? 6 : 9
+  })
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [copied, setCopied] = useState(false)
   const [peerHighlight, setPeerHighlight] = useState<boolean>(() => {
     const v = localStorage.getItem('peerHighlight')
     return v === null ? true : v === 'true'
@@ -51,8 +61,34 @@ export default function SudokuPage() {
   }, [peerHighlight, largeFont])
 
   function newGame() {
-    setSeed(s => s + 1)
+    // Generate new seed and update URL
+    const newSeed = Date.now().toString(36) + Math.random().toString(36).substring(2)
+    setSeed(newSeed)
+    setSeedInput('')
+    setSearchParams({ difficulty, size: String(size), seed: newSeed })
   }
+
+  function handleSeedSubmit() {
+    if (seedInput.trim()) {
+      setSeed(seedInput.trim())
+      setSearchParams({ difficulty, size: String(size), seed: seedInput.trim() })
+    }
+  }
+
+  function handleShareSeed() {
+    const url = `${window.location.origin}${window.location.pathname}?difficulty=${difficulty}&size=${size}&seed=${seed}`
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
+  // Update URL when difficulty or size changes
+  useEffect(() => {
+    if (seed) {
+      setSearchParams({ difficulty, size: String(size), seed })
+    }
+  }, [difficulty, size])
 
   const difficultyOptions = [
     { value: 'easy', label: 'Easy' },
@@ -69,24 +105,18 @@ export default function SudokuPage() {
     <GameLayout title="Sudoku" color={getAccentColor(accent)} icon="🧩">
       <div className="game-toolbar">
         <div className="toolbar-group">
-          <label>
-            Difficulty:
-            <Dropdown 
-              ariaLabel="Select difficulty" 
-              value={difficulty} 
-              options={difficultyOptions} 
-              onChange={v => setDifficulty(String(v) as any)} 
-            />
-          </label>
-          <label>
-            Size:
-            <Dropdown 
-              ariaLabel="Select board size" 
-              value={size} 
-              options={sizeOptions} 
-              onChange={v => setSize(Number(v) as 6 | 9)} 
-            />
-          </label>
+          <Dropdown 
+            ariaLabel="Select difficulty" 
+            value={difficulty} 
+            options={difficultyOptions} 
+            onChange={v => setDifficulty(String(v) as any)} 
+          />
+          <Dropdown 
+            ariaLabel="Select board size" 
+            value={size} 
+            options={sizeOptions} 
+            onChange={v => setSize(Number(v) as 6 | 9)} 
+          />
         </div>
         <div className="toolbar-group">
           <button onClick={newGame} className="btn-primary">✨ New Game</button>
@@ -100,6 +130,7 @@ export default function SudokuPage() {
         size={size}
         peerHighlightEnabled={peerHighlight}
         fixedCellStyle={fixedCellStyle}
+        seed={seed}
       />
 
       <Settings
@@ -113,6 +144,12 @@ export default function SudokuPage() {
         onChangeFixedCellStyle={setFixedCellStyle}
         accent={accent}
         onChangeAccent={setAccent}
+        seed={seed}
+        seedInput={seedInput}
+        onSeedInputChange={setSeedInput}
+        onSeedSubmit={handleSeedSubmit}
+        onShareSeed={handleShareSeed}
+        copied={copied}
       />
     </GameLayout>
   )

@@ -17,7 +17,8 @@
   "dependencies": {
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-router-dom": "^7.11.0"
+    "react-router-dom": "^7.11.0",
+    "seedrandom": "^3.0.5"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.0.0",
@@ -25,6 +26,7 @@
     "@testing-library/user-event": "^14.0.0",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
+    "@types/seedrandom": "^3.0.8",
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "@typescript-eslint/parser": "^6.10.0",
     "@vitejs/plugin-react": "^5.0.0",

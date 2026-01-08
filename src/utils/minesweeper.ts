@@ -134,3 +134,50 @@ export function countFlags(grid: MineGrid): number {
   }
   return count
 }
+
+/**
+ * Chord clicking: reveal all non-flagged neighbors when the number of adjacent flags
+ * matches the adjacent mine count. Only works on revealed cells with numbers.
+ */
+export function chordReveal(grid: MineGrid, row: number, col: number): MineGrid {
+  const rows = grid.length
+  const cols = grid[0].length
+  const cell = grid[row][col]
+
+  // Can only chord on revealed cells with adjacent mines
+  if (!cell.isRevealed || cell.isMine || cell.adjacentMines === 0) {
+    return grid
+  }
+
+  // Count adjacent flags
+  let flagCount = 0
+  const neighborsToReveal: [number, number][] = []
+
+  for (let dr = -1; dr <= 1; dr++) {
+    for (let dc = -1; dc <= 1; dc++) {
+      if (dr === 0 && dc === 0) continue
+      const nr = row + dr
+      const nc = col + dc
+      if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+        if (grid[nr][nc].isFlagged) {
+          flagCount++
+        } else if (!grid[nr][nc].isRevealed) {
+          neighborsToReveal.push([nr, nc])
+        }
+      }
+    }
+  }
+
+  // Only chord if flag count matches adjacent mine count
+  if (flagCount !== cell.adjacentMines) {
+    return grid
+  }
+
+  // Reveal all non-flagged neighbors
+  let newGrid = grid
+  for (const [nr, nc] of neighborsToReveal) {
+    newGrid = revealCell(newGrid, nr, nc)
+  }
+
+  return newGrid
+}

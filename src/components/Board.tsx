@@ -8,6 +8,7 @@ type Props = {
   size?: number
   peerHighlightEnabled?: boolean
   fixedCellStyle?: 'filled' | 'outlined'
+  seed?: string
 }
 
 function clone(g: Grid): Grid {
@@ -20,9 +21,9 @@ function formatTime(s: number) {
   return `${mm}:${ss}`
 }
 
-export default function Board({ difficulty = 'easy', size = 9, peerHighlightEnabled = true, fixedCellStyle = 'outlined' }: Props) {
+export default function Board({ difficulty = 'easy', size = 9, peerHighlightEnabled = true, fixedCellStyle = 'outlined', seed }: Props) {
   const isDevMode = useDevMode()
-  const [initialPuzzle, setInitialPuzzle] = useState<Grid>(() => generateSudoku(difficulty, size))
+  const [initialPuzzle, setInitialPuzzle] = useState<Grid>(() => generateSudoku(difficulty, size, seed).puzzle)
   const [puzzle, setPuzzle] = useState<Grid>(() => clone(initialPuzzle))
   const [solution, setSolution] = useState<Grid | null>(() => solveSudoku(initialPuzzle))
   const [elapsedSeconds, setElapsedSeconds] = useState<number>(0)
@@ -72,11 +73,11 @@ export default function Board({ difficulty = 'easy', size = 9, peerHighlightEnab
   }
 
   useEffect(() => {
-    // Regenerate when difficulty changes
-    const g = generateSudoku(difficulty, size)
-    setInitialPuzzle(g)
-    setPuzzle(clone(g))
-    setSolution(solveSudoku(g))
+    // Regenerate when difficulty, size, or seed changes
+    const result = generateSudoku(difficulty, size, seed)
+    setInitialPuzzle(result.puzzle)
+    setPuzzle(clone(result.puzzle))
+    setSolution(solveSudoku(result.puzzle))
     setNotes({})
     setSelected(null)
     setInvalidCells({})

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import GameLayout from '../components/GameLayout'
+import Dropdown from '../components/Dropdown'
 import DevPanel, { DevButton, DevInfo, DevSection, useDevMode } from '../components/DevPanel'
+import { STORAGE_KEYS } from '../constants'
 import {
   GuessResult,
   LetterState,
@@ -10,11 +12,38 @@ import {
   KEYBOARD_ROWS,
   WORD_LIST
 } from '../utils/wordle'
+import { getRandomWordFR, isValidWordFR, KEYBOARD_ROWS_FR, WORD_LIST_FR } from '../utils/wordleFR'
+import { getRandomWordES, isValidWordES, KEYBOARD_ROWS_ES, WORD_LIST_ES } from '../utils/wordleES'
 
 const MAX_GUESSES = 6
 
+type Language = 'en' | 'fr' | 'es'
+
 export default function WordlePage() {
-  const [answer, setAnswer] = useState(() => getRandomWord())
+  const [language, setLanguage] = useState<Language>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.WORDLE_LANGUAGE)
+    return (saved === 'fr' || saved === 'es') ? saved : 'en'
+  })
+  
+  const getWord = () => {
+    if (language === 'fr') return getRandomWordFR()
+    if (language === 'es') return getRandomWordES()
+    return getRandomWord()
+  }
+  
+  const validateWord = (word: string) => {
+    if (language === 'fr') return isValidWordFR(word)
+    if (language === 'es') return isValidWordES(word)
+    return isValidWord(word)
+  }
+  
+  const getKeyboardLayout = () => {
+    if (language === 'fr') return KEYBOARD_ROWS_FR
+    if (language === 'es') return KEYBOARD_ROWS_ES
+    return KEYBOARD_ROWS
+  }
+  
+  const [answer, setAnswer] = useState(() => getWord())
   const [guesses, setGuesses] = useState<GuessResult[]>([])
   const [currentGuess, setCurrentGuess] = useState('')
   const [gameState, setGameState] = useState<'playing' | 'won' | 'lost'>('playing')
@@ -23,9 +52,19 @@ export default function WordlePage() {
   const [skipValidation, setSkipValidation] = useState(false)
   const isDevMode = useDevMode()
   const [keyStates, setKeyStates] = useState<Record<string, LetterState>>({})
+  
+  // Save language preference
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.WORDLE_LANGUAGE, language)
+  }, [language])
+  
+  // Regenerate answer when language changes
+  useEffect(() => {
+    startNewGame()
+  }, [language])
 
   function startNewGame() {
-    const newAnswer = getRandomWord()
+    const newAnswer = getWord()
     setAnswer(newAnswer)
     setGuesses([])
     setCurrentGuess('')
@@ -47,7 +86,7 @@ export default function WordlePage() {
       return
     }
 
-    if (!skipValidation && !isValidWord(currentGuess)) {
+    if (!skipValidation && !validateWord(currentGuess)) {
       setShake(true)
       setTimeout(() => setShake(false), 500)
       showMessage('Not in word list')
@@ -175,13 +214,31 @@ export default function WordlePage() {
   return (
     <GameLayout title="Wordle" color="#22c55e" icon="✨">
       <div className="wordle-page">
-        <div className="game-toolbar" style={{ justifyContent: 'center' }}>
-          <div className="toolbar-group">
-            <span className="game-stat">Guess {Math.min(guesses.length + 1, MAX_GUESSES)}/{MAX_GUESSES}</span>
-          </div>
-          <div className="toolbar-group">
-            <button onClick={startNewGame} className="btn-primary">🎲 New Word</button>
-          </div>
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          gap: '12px',
+          marginBottom: '16px',
+          flexWrap: 'wrap',
+          padding: '0 8px'
+        }}>
+          <Dropdown
+            ariaLabel="Select language"
+            value={language}
+            options={[
+              { value: 'en', label: 'English' },
+              { value: 'fr', label: 'Français' },
+              { value: 'es', label: 'Español' },
+            ]}
+            onChange={v => setLanguage(v as Language)}
+          />
+          <span className="game-stat" style={{ fontSize: '14px', color: 'var(--text-secondary)', flex: '0 0 auto' }}>
+            Guess {Math.min(guesses.length + 1, MAX_GUESSES)}/{MAX_GUESSES}
+          </span>
+          <button onClick={startNewGame} className="btn-primary" style={{ padding: '8px 16px', fontSize: '14px', flex: '0 0 auto', whiteSpace: 'nowrap' }}>
+            🎲 New
+          </button>
         </div>
 
         {message && (
@@ -231,7 +288,7 @@ export default function WordlePage() {
         )}
 
         <div className="wordle-keyboard">
-          {KEYBOARD_ROWS.map((row, rowIdx) => (
+          {getKeyboardLayout().map((row, rowIdx) => (
             <div key={rowIdx} className="keyboard-row">
               {row.map(key => (
                 <button
@@ -249,6 +306,7 @@ export default function WordlePage() {
 
       <DevPanel title="Wordle Dev Tools">
         <DevSection title="Game Info">
+          <DevInfo label="Language" value={language.toUpperCase()} />
           <DevInfo label="Answer" value={answer} />
           <DevInfo label="Guesses" value={`${guesses.length}/${MAX_GUESSES}`} />
           <DevInfo label="State" value={gameState} />
@@ -259,7 +317,8 @@ export default function WordlePage() {
               🎯 Auto-fill Answer
             </DevButton>
             <DevButton onClick={() => {
-              const randomWord = WORD_LIST[Math.floor(Math.random() * WORD_LIST.length)].toUpperCase()
+              const wordList = language === 'fr' ? WORD_LIST_FR : language === 'es' ? WORD_LIST_ES : WORD_LIST
+              const randomWord = wordList[Math.floor(Math.random() * wordList.length)].toUpperCase()
               setCurrentGuess(randomWord)
             }} variant="default">
               🎲 Random Valid Word

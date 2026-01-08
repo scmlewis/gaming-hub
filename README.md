@@ -7,8 +7,10 @@ A collection of classic puzzle and logic games built with React + TypeScript + V
 ## Games
 
 ### 🔢 Sudoku
-Complete the 9×9 grid with numbers 1-9 following classic Sudoku rules. Features include:
+Complete grids with unique numbers following classic Sudoku rules. Features include:
+- Multiple grid sizes (**6×6** or **9×9**)
 - Multiple difficulty levels (Easy, Medium, Hard)
+- **Seed Sharing** — Share specific puzzles via URL (accessible in Settings)
 - Pencil/Notes mode for candidate numbers
 - Hint system with optional auto-notes
 - Undo/Redo functionality
@@ -17,26 +19,31 @@ Complete the 9×9 grid with numbers 1-9 following classic Sudoku rules. Features
 - Save/Load game state
 
 ### 💣 Minesweeper
-Classic mine-sweeping game with three difficulty levels:
-- Beginner (9×9, 10 mines)
-- Intermediate (16×16, 40 mines)
-- Expert (16×30, 99 mines)
+Classic mine-sweeping game with advanced features:
+- Three preset difficulty levels (Beginner, Intermediate, Expert)
+- **Custom Board Size** — Create boards up to 50×50 with custom mine counts
+- **Chord Clicking** — Middle-click to reveal adjacent cells when numbers are satisfied
 - Flag mode for marking suspected mines
 - Timer and mine counter
+- First-click safety zone
 
 ### 🎲 2048
 Slide numbered tiles to combine them and reach 2048:
-- Smooth animations
+- **5 Accent Colors** — Classic, Ocean, Neon, Sunset, Forest themes (in Settings)
+- **Undo Moves** — Step back through your move history (up to 100 moves)
+- **AI Hint System** — Get strategic move suggestions with explanations
+- Smooth animations with tile tracking
 - Score tracking with best score
-- Undo moves
-- New game at any time
+- Keep playing mode after winning
+- Mobile-optimized swiping (no screen scrolling)
 
 ### 🔤 Wordle
 Guess the 5-letter word in 6 attempts:
+- **Multi-Language Support** — Play in English, French (Français), or Spanish (Español)
+- Language-specific keyboard layouts (QWERTY, AZERTY)
 - Color-coded feedback (correct, present, absent)
 - Keyboard highlighting
-- Statistics tracking
-- Streak counter
+- Daily challenge mode
 
 ## Setup
 

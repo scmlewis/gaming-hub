@@ -25,7 +25,7 @@ vi.mock('../../utils/sudoku', async () => {
   ]
   return {
     ...(actual as any),
-    generateSudoku: vi.fn(() => puzzle6),
+    generateSudoku: vi.fn(() => ({ puzzle: puzzle6, solution: solution6, seed: 'test-seed' })),
     solveSudoku: vi.fn(() => solution6),
     isValidMove: vi.fn((grid, r, c, v) => true)
   }

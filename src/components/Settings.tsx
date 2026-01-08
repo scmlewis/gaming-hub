@@ -11,9 +11,33 @@ type Props = {
   onChangeFixedCellStyle: (style: 'filled' | 'outlined') => void
   accent: string
   onChangeAccent: (a: string) => void
+  // Optional seed sharing props
+  seed?: string
+  seedInput?: string
+  onSeedInputChange?: (value: string) => void
+  onSeedSubmit?: () => void
+  onShareSeed?: () => void
+  copied?: boolean
 }
 
-const Settings: React.FC<Props> = ({ open, onClose, peerHighlight, onTogglePeerHighlight, largeFont, onToggleLargeFont, fixedCellStyle, onChangeFixedCellStyle, accent, onChangeAccent }) => {
+const Settings: React.FC<Props> = ({ 
+  open, 
+  onClose, 
+  peerHighlight, 
+  onTogglePeerHighlight, 
+  largeFont, 
+  onToggleLargeFont, 
+  fixedCellStyle, 
+  onChangeFixedCellStyle, 
+  accent, 
+  onChangeAccent,
+  seed,
+  seedInput,
+  onSeedInputChange,
+  onSeedSubmit,
+  onShareSeed,
+  copied
+}) => {
   if (!open) return null
 
   function exportSave() {
@@ -99,6 +123,44 @@ const Settings: React.FC<Props> = ({ open, onClose, peerHighlight, onTogglePeerH
               </div>
             </div>
           </div>
+
+          {/* Seed Sharing (Sudoku only) */}
+          {onSeedSubmit && (
+            <div>
+              <h4 style={{ margin: '0 0 8px 0', fontSize: 14, opacity: 0.8 }}>Puzzle Seed</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <input
+                    type="text"
+                    value={seedInput}
+                    onChange={e => onSeedInputChange?.(e.target.value)}
+                    placeholder={seed || 'Enter seed...'}
+                    className="game-input"
+                    style={{ flex: 1, padding: '8px 12px', fontSize: '14px' }}
+                    onKeyPress={e => e.key === 'Enter' && onSeedSubmit()}
+                  />
+                  <button 
+                    onClick={onSeedSubmit} 
+                    className="btn-secondary" 
+                    disabled={!seedInput?.trim()}
+                  >
+                    Load
+                  </button>
+                </div>
+                <button 
+                  onClick={onShareSeed} 
+                  className="btn-secondary" 
+                  disabled={!seed}
+                  style={{ width: '100%' }}
+                >
+                  {copied ? '✓ Copied to Clipboard!' : '🔗 Share Current Puzzle'}
+                </button>
+              </div>
+              <div style={{ color: 'var(--text-tertiary)', fontSize: 12, marginTop: 6 }}>
+                <p style={{ margin: 0 }}>Seeds let you share exact puzzles with others via URL.</p>
+              </div>
+            </div>
+          )}
 
           {/* Save/Load */}
           <div>
