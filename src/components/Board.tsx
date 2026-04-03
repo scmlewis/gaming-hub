@@ -345,6 +345,8 @@ export default function Board({
         else cur.add(num);
         return { ...prev, [key]: Array.from(cur).sort((a: number, b: number) => a - b) };
       });
+      // Auto-close keypad on mobile after selection
+      if (isMobileView) setTimeout(() => setSelected(null), 150);
       return;
     }
     pushHistory(puzzle, notes);
@@ -370,6 +372,8 @@ export default function Board({
       next[r][c] = num;
       markInvalid(next);
       triggerHaptic(10);
+      // Auto-close keypad on mobile after selection
+      if (isMobileView) setTimeout(() => setSelected(null), 150);
 
       // remove this digit from peers' notes
       setNotes((prevNotes) => {
@@ -423,6 +427,8 @@ export default function Board({
         return next;
       });
     }
+    // Auto-close keypad on mobile after clearing
+    if (isMobileView) setTimeout(() => setSelected(null), 150);
   }
 
   function handleClick(r: number, c: number) {
@@ -624,7 +630,8 @@ export default function Board({
         onClick={undo}
         disabled={undoStack.length === 0}
         className="sudoku-action-btn"
-        aria-label="Undo"
+        aria-label="Undo last move"
+        title="Undo (Ctrl+Z)"
       >
         ↶
       </button>
@@ -632,14 +639,16 @@ export default function Board({
         onClick={redo}
         disabled={redoStack.length === 0}
         className="sudoku-action-btn"
-        aria-label="Redo"
+        aria-label="Redo last move"
+        title="Redo (Ctrl+Y)"
       >
         ↷
       </button>
       <button
         onClick={() => handleClearAction('backspace')}
         className="sudoku-action-btn"
-        aria-label="Erase"
+        aria-label="Clear cell"
+        title="Clear selected cell"
       >
         ⌫
       </button>
@@ -647,14 +656,25 @@ export default function Board({
         onClick={() => setPencilMode((v) => !v)}
         className={`sudoku-action-btn ${pencilMode ? 'active' : ''}`}
         aria-pressed={pencilMode}
-        aria-label="Pencil"
+        aria-label="Toggle pencil mode"
+        title="Pencil mode (notes)"
       >
         ✎
       </button>
-      <button onClick={giveHint} className="sudoku-action-btn" aria-label="Hint">
+      <button
+        onClick={giveHint}
+        className="sudoku-action-btn"
+        aria-label="Use hint"
+        title="Hint (reveals a cell)"
+      >
         💡
       </button>
-      <button onClick={checkSolution} className="sudoku-action-btn" aria-label="Check">
+      <button
+        onClick={checkSolution}
+        className="sudoku-action-btn"
+        aria-label="Check solution"
+        title="Check if entries are valid"
+      >
         ✓
       </button>
     </>
