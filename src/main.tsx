@@ -1,18 +1,33 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
-import { DevModeProvider } from './components/DevPanel'
 import './index.css'
 
 const container = document.getElementById('root')!
 const root = createRoot(container)
-root.render(
-  <React.StrictMode>
-    <DevModeProvider>
+
+if (import.meta.env.DEV) {
+  // In development, lazy-load and mount the DevModeProvider so it isn't
+  // included in production bundles and is only loaded for dev builds.
+  const mountDev = async () => {
+    const { DevModeProvider } = await import('./components/DevPanel')
+    root.render(
+      <React.StrictMode>
+        <DevModeProvider>
+          <App />
+        </DevModeProvider>
+      </React.StrictMode>
+    )
+  }
+  mountDev()
+} else {
+  // Production: render app without dev tooling
+  root.render(
+    <React.StrictMode>
       <App />
-    </DevModeProvider>
-  </React.StrictMode>
-)
+    </React.StrictMode>
+  )
+}
 
 // Calculate and set --ui-vertical-space on `.app-root` based on actual DOM heights.
 // This ensures `--cell-size` (which depends on --ui-vertical-space) adapts to available viewport height.

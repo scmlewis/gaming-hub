@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 type Props = {
   title: string
   description: string
-  icon: string
+  icon: React.ReactNode
   to: string
   color: string
 }

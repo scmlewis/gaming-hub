@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Board from '../Board'
 
@@ -32,15 +32,33 @@ vi.mock('../../utils/sudoku', async () => {
 })
 
 describe('Board component', () => {
+  let setIntervalSpy: ReturnType<typeof vi.spyOn>
+  let clearIntervalSpy: ReturnType<typeof vi.spyOn>
+
+  beforeEach(() => {
+    setIntervalSpy = vi.spyOn(globalThis, 'setInterval').mockImplementation(() => 0 as any)
+    clearIntervalSpy = vi.spyOn(globalThis, 'clearInterval').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    setIntervalSpy.mockRestore()
+    clearIntervalSpy.mockRestore()
+  })
+
   it('renders and allows entering a number via keyboard', async () => {
     render(<Board difficulty="easy" size={6} />)
+    const user = userEvent.setup()
     // find a non-fixed cell (0,1)
-    const cellButton = screen.getByLabelText('Cell 1-2')
+    const cellButton = await screen.findByLabelText('Cell 1-2')
     expect(cellButton).toBeInTheDocument()
     // click to select
-    await userEvent.click(cellButton)
+    await act(async () => {
+      await user.click(cellButton)
+    })
     // press 7 (invalid for 6x6) -> should be ignored because size limits but our mock isValidMove returns true
-    await fireEvent.keyDown(window, { key: '4' })
+    await act(async () => {
+      await user.keyboard('4')
+    })
     // After input, the button should display '4'
     expect(cellButton).toHaveTextContent('4')
   })

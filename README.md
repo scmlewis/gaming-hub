@@ -69,7 +69,7 @@ npm run dev
 
 ## Tech Stack
 
-- **React 19** — UI framework
+- **React 18.2** — UI framework
 - **TypeScript** — Type safety
 - **Vite** — Build tool and dev server
 - **Vitest** — Unit testing

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import Cell from './Cell'
 import DevPanel, { DevButton, DevInfo, DevSection, useDevMode } from './DevPanel'
+import NumericKeypad from './NumericKeypad'
 import { generateSudoku, solveSudoku, isValidMove, Grid } from '../utils/sudoku'
 
 type Props = {
@@ -22,7 +23,6 @@ function formatTime(s: number) {
 }
 
 export default function Board({ difficulty = 'easy', size = 9, peerHighlightEnabled = true, fixedCellStyle = 'outlined', seed }: Props) {
-  const isDevMode = useDevMode()
   const [initialPuzzle, setInitialPuzzle] = useState<Grid>(() => generateSudoku(difficulty, size, seed).puzzle)
   const [puzzle, setPuzzle] = useState<Grid>(() => clone(initialPuzzle))
   const [solution, setSolution] = useState<Grid | null>(() => solveSudoku(initialPuzzle))
@@ -40,6 +40,7 @@ export default function Board({ difficulty = 'easy', size = 9, peerHighlightEnab
   const [checkWrong, setCheckWrong] = useState<Record<string, boolean>>({})
   const [toast, setToast] = useState<{ text: string; type?: 'info' | 'success' | 'error' } | null>(null)
   const [revealConfirm, setRevealConfirm] = useState(false)
+  const [showMobileActions, setShowMobileActions] = useState(false)
 
   function pushHistory(prevPuzzle: Grid, prevNotes: Record<string, number[]>) {
     setUndoStack(s => [...s, { puzzle: clone(prevPuzzle), notes: { ...prevNotes } }])
@@ -245,8 +246,149 @@ export default function Board({ difficulty = 'easy', size = 9, peerHighlightEnab
     return () => window.removeEventListener('keydown', onKey)
   }, [selected, fixed, pencilMode, puzzle, notes])
 
+  // Mobile / touch helpers: show keypad when on small screens and a cell is selected
+  const [isMobileView, setIsMobileView] = useState<boolean>(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const mq = window.matchMedia('(max-width: 768px)')
+    const handler = (ev: MediaQueryListEvent) => setIsMobileView(ev.matches)
+    if (mq.addEventListener) mq.addEventListener('change', handler)
+    else mq.addListener(handler as any)
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener('change', handler)
+      else mq.removeListener(handler as any)
+    }
+  }, [])
+
+  // toggle a document-level class when mobile keypad is visible to avoid global layout shifts
+  useEffect(() => {
+    const cls = 'mobile-keypad-open'
+    const el = document.documentElement
+    const should = isMobileView && !!selected
+    if (should) el.classList.add(cls)
+    else el.classList.remove(cls)
+    return () => { el.classList.remove(cls) }
+  }, [isMobileView, selected])
+
+  // Close mobile actions panel when leaving mobile view
+  useEffect(() => {
+    if (!isMobileView) setShowMobileActions(false)
+  }, [isMobileView])
+
+  // Ensure selected cell is visible when keypad opens on mobile
+  useEffect(() => {
+    if (!isMobileView || !selected) return
+    // run after layout
+    const id = setTimeout(() => {
+      const sel = document.querySelector('.cell.cell-selected') as HTMLElement | null
+      if (!sel) return
+      const keypad = document.querySelector('.mobile-keypad') as HTMLElement | null
+      const keypadH = keypad ? Math.round(keypad.getBoundingClientRect().height) : 160
+      const rect = sel.getBoundingClientRect()
+      const viewportBottom = window.innerHeight - keypadH
+      // if selected cell is covered by keypad, scroll by the overlap amount
+      if (rect.bottom > viewportBottom) {
+        const overlap = rect.bottom - viewportBottom + 12
+        window.scrollBy({ top: overlap, behavior: 'smooth' })
+      } else if (rect.top < 0) {
+        // if above viewport, scroll it into view
+        const delta = rect.top - 12
+        window.scrollBy({ top: delta, behavior: 'smooth' })
+      }
+    }, 120)
+    return () => clearTimeout(id)
+  }, [isMobileView, selected])
+
+  function handleNumberInput(num: number) {
+    if (!selected) return
+    const [r, c] = selected
+    const n = puzzle.length
+    if (fixed[r][c]) return
+    if (num === 0) return // ignore zero by default (unless you want to use it to clear)
+    if (pencilMode) {
+      pushHistory(puzzle, notes)
+      setNotes(prev => {
+        const key = `${r}-${c}`
+        const cur = new Set(prev[key] ?? [])
+        if (cur.has(num)) cur.delete(num)
+        else cur.add(num)
+        return { ...prev, [key]: Array.from(cur).sort((a: number, b: number) => a - b) }
+      })
+      return
+    }
+    pushHistory(puzzle, notes)
+    setPuzzle(prev => {
+      const next = prev.map(row => row.slice())
+      const saved = next[r][c]
+      next[r][c] = null
+      const ok = isValidMove(next, r, c, num)
+      next[r][c] = saved
+      if (!ok) {
+        setInvalidCells(curr => ({ ...curr, [`${r}-${c}`]: true }))
+        setTimeout(() => setInvalidCells(curr => { const cpy = { ...curr }; delete cpy[`${r}-${c}`]; return cpy }), 600)
+        return prev
+      }
+      next[r][c] = num
+      markInvalid(next)
+      triggerHaptic(10)
+
+      // remove this digit from peers' notes
+      setNotes(prevNotes => {
+        const cpy: Record<string, number[]> = { ...prevNotes }
+        for (let rr = 0; rr < n; rr++) {
+            const key = `${rr}-${c}`
+            if (cpy[key]) cpy[key] = cpy[key].filter((x: number) => x !== num)
+            if (cpy[key] && cpy[key].length === 0) delete cpy[key]
+          }
+          for (let cc = 0; cc < n; cc++) {
+            const key = `${r}-${cc}`
+            if (cpy[key]) cpy[key] = cpy[key].filter((x: number) => x !== num)
+            if (cpy[key] && cpy[key].length === 0) delete cpy[key]
+          }
+          const blockRowsSize = size === 6 ? 2 : Math.floor(Math.sqrt(n))
+          const blockColsSize = size === 6 ? 3 : Math.floor(Math.sqrt(n))
+          const br = Math.floor(r / blockRowsSize) * blockRowsSize
+          const bc = Math.floor(c / blockColsSize) * blockColsSize
+          for (let rr = br; rr < br + blockRowsSize; rr++) for (let cc = bc; cc < bc + blockColsSize; cc++) {
+            const key = `${rr}-${cc}`
+            if (cpy[key]) cpy[key] = cpy[key].filter(x => x !== num)
+            if (cpy[key] && cpy[key].length === 0) delete cpy[key]
+          }
+        return cpy
+      })
+
+      return next
+    })
+  }
+
+  function handleClearAction(_action: 'clear' | 'backspace') {
+    if (!selected) return
+    const [r, c] = selected
+    if (fixed[r][c]) return
+    triggerHaptic(8)
+    if (pencilMode) {
+      pushHistory(puzzle, notes)
+      setNotes(prev => {
+        const key = `${r}-${c}`
+        const cpy = { ...prev }
+        delete cpy[key]
+        return cpy
+      })
+    } else {
+      pushHistory(puzzle, notes)
+      setPuzzle(prev => {
+        const next = prev.map(row => row.slice())
+        next[r][c] = null
+        markInvalid(next)
+        return next
+      })
+    }
+  }
+
   function handleClick(r: number, c: number) {
     setSelected([r, c])
+    triggerHaptic(6)
   }
 
   function markInvalid(grid: Grid) {
@@ -403,6 +545,12 @@ export default function Board({ difficulty = 'easy', size = 9, peerHighlightEnab
     setTimeout(() => setToast(null), 2200)
   }
 
+  function triggerHaptic(ms: number) {
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      navigator.vibrate(ms)
+    }
+  }
+
   function resetToInitial() {
     setPuzzle(clone(initialPuzzle))
     setSelected(null)
@@ -413,9 +561,22 @@ export default function Board({ difficulty = 'easy', size = 9, peerHighlightEnab
     setRedoStack([])
   }
 
+  const actionButtons = (
+    <>
+      <button onClick={undo} disabled={undoStack.length === 0} className="sudoku-action-btn" aria-label="Undo">↶</button>
+      <button onClick={redo} disabled={redoStack.length === 0} className="sudoku-action-btn" aria-label="Redo">↷</button>
+      <button onClick={() => handleClearAction('backspace')} className="sudoku-action-btn" aria-label="Erase">⌫</button>
+      <button onClick={() => setPencilMode(v => !v)} className={`sudoku-action-btn ${pencilMode ? 'active' : ''}`} aria-pressed={pencilMode} aria-label="Pencil">
+        ✎
+      </button>
+      <button onClick={giveHint} className="sudoku-action-btn" aria-label="Hint">💡</button>
+      <button onClick={checkSolution} className="sudoku-action-btn" aria-label="Check">✓</button>
+    </>
+  )
+
   return (
     <div>
-      <div className="board-card">
+      <div className="board-card sudoku-layout">
         <div className="board-left">
           <div className="timer-display">
             <div className="timer-value">{formatTime(elapsedSeconds)}</div>
@@ -429,7 +590,8 @@ export default function Board({ difficulty = 'easy', size = 9, peerHighlightEnab
             </div>
           </div>
 
-          <div className="board-controls" role="region" aria-label="Board controls">
+          {!isMobileView && (
+          <div className="board-controls sudoku-mobile-controls" role="region" aria-label="Board controls">
             {/* Primary actions */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <button onClick={checkSolution} className="btn-secondary">Check</button>
@@ -437,7 +599,7 @@ export default function Board({ difficulty = 'easy', size = 9, peerHighlightEnab
               <button onClick={() => setPencilMode(v => !v)} className={pencilMode ? 'btn-secondary' : ''} aria-pressed={pencilMode}>{pencilMode ? 'Pencil: ON' : 'Pencil: OFF'}</button>
             </div>
             {/* Secondary actions */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div className={`board-actions-secondary ${isMobileView ? 'mobile' : ''} ${showMobileActions ? 'open' : ''}`} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <button onClick={undo} disabled={undoStack.length === 0}>Undo</button>
               <button onClick={redo} disabled={redoStack.length === 0}>Redo</button>
               <button onClick={resetToInitial}>Reset</button>
@@ -446,6 +608,35 @@ export default function Board({ difficulty = 'easy', size = 9, peerHighlightEnab
               <button onClick={revealSolution} className="btn-danger">Reveal</button>
             </div>
           </div>
+          )}
+
+          {isMobileView && (
+            <div className="sudoku-action-row mobile-only" role="toolbar" aria-label="Quick actions">
+              {actionButtons}
+              <button onClick={() => setShowMobileActions(true)} className="sudoku-action-btn" aria-label="More actions">
+                ⋯
+              </button>
+            </div>
+          )}
+
+          {isMobileView && showMobileActions && (
+            <div className="mobile-actions-overlay" role="dialog" aria-modal="true" onClick={() => setShowMobileActions(false)}>
+              <div className="mobile-actions-sheet" onClick={e => e.stopPropagation()}>
+                <div className="mobile-actions-header">
+                  <span>More Actions</span>
+                  <button className="btn-icon" aria-label="Close" onClick={() => setShowMobileActions(false)}>✕</button>
+                </div>
+                <div className="mobile-actions-grid">
+                  <button onClick={undo} disabled={undoStack.length === 0}>Undo</button>
+                  <button onClick={redo} disabled={redoStack.length === 0}>Redo</button>
+                  <button onClick={resetToInitial}>Reset</button>
+                  <button onClick={saveToStorage} className="btn-tertiary">Save</button>
+                  <button onClick={loadFromStorage} className="btn-tertiary">Load</button>
+                  <button onClick={revealSolution} className="btn-danger">Reveal</button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* message / toast area */}
           <div style={{ minHeight: 28 }}>
@@ -485,6 +676,22 @@ export default function Board({ difficulty = 'easy', size = 9, peerHighlightEnab
           {completed && <div className="completed-note">Completed: {formatTime(elapsedSeconds)}</div>}
         </div>
 
+        <aside className="board-side sudoku-side">
+          <div className="sudoku-actions" role="toolbar" aria-label="Actions">
+            {actionButtons}
+          </div>
+          <div className="sudoku-numpad" role="grid" aria-label="Number pad">
+            {Array.from({ length: puzzle.length }, (_, i) => i + 1).map(n => (
+              <button key={n} className="sudoku-numpad-btn" onClick={() => handleNumberInput(n)} aria-label={`Number ${n}`}>
+                {n}
+              </button>
+            ))}
+            <button className="sudoku-numpad-btn wide" onClick={() => handleClearAction('backspace')} aria-label="Clear">
+              Clear
+            </button>
+          </div>
+        </aside>
+
         {/* reveal confirmation modal */}
         {revealConfirm && (
           <div className="modal-overlay" role="dialog" aria-modal="true" aria-label="Reveal confirmation">
@@ -508,9 +715,9 @@ export default function Board({ difficulty = 'easy', size = 9, peerHighlightEnab
                 <button className="btn-primary" onClick={() => {
                   // start a new puzzle with same difficulty & size
                   const g = generateSudoku(difficulty, size)
-                  setInitialPuzzle(g)
-                  setPuzzle(clone(g))
-                  setSolution(solveSudoku(g))
+                  setInitialPuzzle(g.puzzle)
+                  setPuzzle(clone(g.puzzle))
+                  setSolution(g.solution)
                   setNotes({})
                   setSelected(null)
                   setInvalidCells({})
@@ -524,6 +731,20 @@ export default function Board({ difficulty = 'easy', size = 9, peerHighlightEnab
           </div>
         )}
       </div>
+
+      {/* Mobile numeric keypad (only on small screens and when a cell is selected) */}
+      {isMobileView && selected && (
+        <NumericKeypad
+          onPress={(k) => {
+            if (k === 'clear' || k === 'backspace') handleClearAction(k)
+            else if (typeof k === 'number') {
+              if (k === 0) handleClearAction('clear')
+              else handleNumberInput(k)
+            }
+          }}
+          onClose={() => setSelected(null)}
+        />
+      )}
 
       <DevPanel title="Sudoku Dev Tools">
         <DevSection title="Game Info">
@@ -572,9 +793,9 @@ export default function Board({ difficulty = 'easy', size = 9, peerHighlightEnab
             </DevButton>
             <DevButton onClick={() => {
               const g = generateSudoku(difficulty, size)
-              setInitialPuzzle(g)
-              setPuzzle(clone(g))
-              setSolution(solveSudoku(g))
+              setInitialPuzzle(g.puzzle)
+              setPuzzle(clone(g.puzzle))
+              setSolution(g.solution)
               setNotes({})
               setSelected(null)
               setInvalidCells({})

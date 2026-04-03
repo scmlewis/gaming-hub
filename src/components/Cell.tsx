@@ -17,7 +17,8 @@ type Props = {
 
 export default function Cell({ row, col, value, fixed = false, fixedStyle = 'filled', selected = false, peer = false, wrong = false, invalid = false, notes, size = 9, onClick }: Props) {
   const fixedClass = fixed ? (fixedStyle === 'outlined' ? 'cell-fixed--outlined' : 'cell-fixed--filled') : ''
-  const className = ['cell', fixedClass, selected ? 'cell-selected' : '', invalid ? 'cell-invalid' : '', peer ? 'cell-peer' : '']
+  const valueClass = value && !fixed ? 'cell-user' : ''
+  const className = ['cell', fixedClass, valueClass, selected ? 'cell-selected' : '', invalid ? 'cell-invalid' : '', peer ? 'cell-peer' : '']
   if (wrong) className.push('cell-wrong')
   return (
     <button

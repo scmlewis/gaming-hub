@@ -1,12 +1,11 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import ThemeSwitcher from './ThemeSwitcher'
 
 type Props = {
   title: string
   children: React.ReactNode
   color?: string
-  icon?: string
+  icon?: React.ReactNode
 }
 
 export default function GameLayout({ title, children, color = '#6366f1', icon }: Props) {
@@ -32,10 +31,10 @@ export default function GameLayout({ title, children, color = '#6366f1', icon }:
           <span className="back-text">Home</span>
         </Link>
         <h1 className="game-title">
-          {icon && <span style={{ marginRight: 10 }}>{icon}</span>}
+          {icon && <span className="game-title-icon">{icon}</span>}
           {title}
         </h1>
-        <ThemeSwitcher />
+        <div className="header-spacer" />
       </header>
       <main className="game-content">
         {children}

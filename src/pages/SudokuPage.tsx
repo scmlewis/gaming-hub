@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import GameLayout from '../components/GameLayout'
+import Icon from '../components/icons'
 import Board from '../components/Board'
 import Dropdown from '../components/Dropdown'
 import Settings from '../components/Settings'
@@ -30,7 +31,6 @@ export default function SudokuPage() {
   const [fixedCellStyle, setFixedCellStyle] = useState<'filled' | 'outlined'>(() => 
     (localStorage.getItem('fixedCellStyle') as 'filled' | 'outlined') || 'outlined'
   )
-  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark')
   const [accent, setAccent] = useState(() => localStorage.getItem('accent') || 'blue')
 
   const getAccentColor = (accentName: string) => {
@@ -41,11 +41,6 @@ export default function SudokuPage() {
     }
     return colors[accentName] || colors['blue']
   }
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme)
-    localStorage.setItem('theme', theme)
-  }, [theme])
 
   useEffect(() => {
     document.documentElement.setAttribute('data-accent', accent)
@@ -102,7 +97,7 @@ export default function SudokuPage() {
   ]
 
   return (
-    <GameLayout title="Sudoku" color={getAccentColor(accent)} icon="🧩">
+    <GameLayout title="Sudoku" color={getAccentColor(accent)} icon={<Icon name="sudoku" />}>
       <div className="game-toolbar">
         <div className="toolbar-group">
           <Dropdown 
@@ -119,8 +114,10 @@ export default function SudokuPage() {
           />
         </div>
         <div className="toolbar-group">
-          <button onClick={newGame} className="btn-primary">✨ New Game</button>
-          <button onClick={() => setSettingsOpen(true)} className="btn-icon" aria-label="Settings">⚙️</button>
+          <button onClick={newGame} className="btn-primary">New Game</button>
+          <button onClick={() => setSettingsOpen(true)} className="btn-icon" aria-label="Settings">
+            <Icon name="settings" size={18} />
+          </button>
         </div>
       </div>
 

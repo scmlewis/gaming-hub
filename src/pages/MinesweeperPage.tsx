@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import GameLayout from '../components/GameLayout'
+import Icon from '../components/icons'
 import Dropdown from '../components/Dropdown'
 import DevPanel, { DevButton, DevInfo, DevSection, useDevMode } from '../components/DevPanel'
 import { STORAGE_KEYS, MINESWEEPER_MAX_ROWS, MINESWEEPER_MAX_COLS } from '../constants'
@@ -46,7 +47,14 @@ export default function MinesweeperPage() {
   const [time, setTime] = useState(0)
   const [timerRunning, setTimerRunning] = useState(false)
   const [showMines, setShowMines] = useState(false)
+  const [flagMode, setFlagMode] = useState(false)
   const isDevMode = useDevMode()
+
+  const triggerHaptic = (ms: number) => {
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      navigator.vibrate(ms)
+    }
+  }
 
   const config = difficulty === 'custom' ? customConfig : DIFFICULTIES[difficulty]
 
@@ -85,6 +93,12 @@ export default function MinesweeperPage() {
       setTimerRunning(true)
     }
 
+    if (flagMode && gameState === 'playing' && currentGrid && !currentGrid[row][col].isRevealed && !isMiddleClick) {
+      setGrid(toggleFlag(currentGrid, row, col))
+      triggerHaptic(10)
+      return
+    }
+
     if (currentGrid[row][col].isFlagged && !isMiddleClick) return
 
     // Chord clicking: middle-click or click on revealed cell with satisfied numbers
@@ -105,6 +119,7 @@ export default function MinesweeperPage() {
 
     const newGrid = revealCell(currentGrid, row, col)
     setGrid(newGrid)
+    triggerHaptic(8)
 
     if (checkLose(newGrid)) {
       setGrid(revealAllMines(newGrid))
@@ -151,6 +166,21 @@ export default function MinesweeperPage() {
   const flagCount = grid ? countFlags(grid) : 0
   const minesRemaining = config.mines - flagCount
 
+  // Prevent duplicate toggles from multiple event types firing in quick succession
+  const lastToggleRef = React.useRef<Map<string, number>>(new Map())
+
+  function toggleFlagSafe(row: number, col: number) {
+    const key = `${row}-${col}`
+    const now = Date.now()
+    const prev = lastToggleRef.current.get(key) || 0
+    if (now - prev < 250) return
+    lastToggleRef.current.set(key, now)
+    if (!grid) return
+    if (grid[row][col].isRevealed) return
+    setGrid(toggleFlag(grid, row, col))
+    triggerHaptic(10)
+  }
+
   const displayGrid = grid || createEmptyDisplay(config.rows, config.cols)
 
   function createEmptyDisplay(rows: number, cols: number) {
@@ -165,7 +195,7 @@ export default function MinesweeperPage() {
   }
 
   return (
-    <GameLayout title="Minesweeper" color="#f43f5e" icon="💣">
+    <GameLayout title="Minesweeper" color="#f43f5e" icon={<Icon name="minesweeper" />}>
       <div className="game-toolbar">
         <div className="toolbar-group">
           <Dropdown
@@ -221,7 +251,10 @@ export default function MinesweeperPage() {
           </div>
         )}
         <div className="toolbar-group">
-          <button onClick={startNewGame} className="btn-primary">✨ New Game</button>
+          <button onClick={startNewGame} className="btn-primary">New Game</button>
+          <button onClick={() => setFlagMode(v => !v)} className="btn-secondary mobile-only" aria-pressed={flagMode}>
+            {flagMode ? 'Flag Mode' : 'Reveal Mode'}
+          </button>
         </div>
       </div>
 
@@ -252,69 +285,95 @@ export default function MinesweeperPage() {
         </div>
       )}
 
-        <div 
-          className="minesweeper-grid"
-          style={{ 
-            gridTemplateColumns: `repeat(${config.cols}, var(--mine-cell-size))`,
-            gridTemplateRows: `repeat(${config.rows}, var(--mine-cell-size))`,
-            '--grid-cols': config.cols
-          } as React.CSSProperties}
-        >
-          {displayGrid.map((row, r) =>
-            row.map((cell, c) => {
-              let touchTimer: number | null = null
-              
-              return (
-              <button
-                key={`${r}-${c}`}
-                className={`mine-cell ${cell.isRevealed ? 'revealed' : ''} ${cell.isFlagged ? 'flagged' : ''} ${cell.isMine && cell.isRevealed ? 'mine' : ''} ${showMines && cell.isMine && !cell.isRevealed ? 'dev-show-mine' : ''}`}
-                onClick={() => handleCellClick(r, c)}
-                onContextMenu={e => handleRightClick(e, r, c)}
-                onMouseDown={e => handleMiddleClick(e, r, c)}
-                onTouchStart={(e) => {
+        <div className="minesweeper-grid-wrap">
+          <div className="minesweeper-hint mobile-only">Drag to pan for large boards</div>
+          <div 
+            className="minesweeper-grid"
+            onContextMenu={e => e.preventDefault()} /* prevent browser context menu inside grid */
+            style={{ 
+              gridTemplateColumns: `repeat(${config.cols}, var(--mine-cell-size))`,
+              gridTemplateRows: `repeat(${config.rows}, var(--mine-cell-size))`,
+              '--grid-cols': config.cols
+            } as React.CSSProperties}
+          >
+            {displayGrid.map((row, r) =>
+              row.map((cell, c) => {
+                let pointerTimer: number | null = null
+
+                const onAux = (e: React.MouseEvent) => {
+                  // handle middle/right clicks consistently
+                  // prevent default context menu
                   e.preventDefault()
-                  touchTimer = setTimeout(() => {
-                    handleRightClick(e as any, r, c)
-                    touchTimer = null
-                  }, 500)
-                }}
-                onTouchEnd={(e) => {
-                  if (touchTimer) {
-                    clearTimeout(touchTimer)
+                  if (e.button === 1) {
+                    handleCellClick(r, c, true)
+                  } else if (e.button === 2) {
+                    toggleFlagSafe(r, c)
+                  }
+                }
+
+                const onPointerDown = (e: React.PointerEvent) => {
+                  // For touch, start long-press timer to toggle flag
+                  if (e.pointerType === 'touch') {
+                    // prevent default to avoid browser context menu on long-press
+                    e.preventDefault()
+                    pointerTimer = window.setTimeout(() => {
+                      if (gameState === 'playing' && grid && !grid[r][c].isRevealed) setGrid(toggleFlag(grid, r, c))
+                      pointerTimer = null
+                    }, 500)
+                  }
+                }
+
+                const onPointerUp = (e: React.PointerEvent) => {
+                  if (pointerTimer) {
+                    clearTimeout(pointerTimer as number)
+                    pointerTimer = null
+                    // treat as a normal tap/click
                     handleCellClick(r, c)
                   }
-                  e.preventDefault()
-                }}
-                onTouchMove={() => {
-                  if (touchTimer) {
-                    clearTimeout(touchTimer)
-                    touchTimer = null
+                }
+
+                const onPointerMove = () => {
+                  if (pointerTimer) {
+                    clearTimeout(pointerTimer as number)
+                    pointerTimer = null
                   }
-                }}
-                disabled={gameState === 'won' || gameState === 'lost'}
-              >
-                {cell.isRevealed ? (
-                  cell.isMine ? '💣' : (
-                    cell.adjacentMines > 0 ? (
-                      <span className={NUMBER_CLASSES[cell.adjacentMines]}>
-                        {cell.adjacentMines}
-                      </span>
-                    ) : ''
-                  )
-                ) : cell.isFlagged ? (
-                  <span className="flag-icon">⚑</span>
-                ) : ''}
-              </button>
-              )
-            })
-          )}
+                }
+
+                return (
+                <button
+                  key={`${r}-${c}`}
+                  className={`mine-cell ${cell.isRevealed ? 'revealed' : ''} ${cell.isFlagged ? 'flagged' : ''} ${cell.isMine && cell.isRevealed ? 'mine' : ''} ${showMines && cell.isMine && !cell.isRevealed ? 'dev-show-mine' : ''}`}
+                  onClick={() => handleCellClick(r, c)}
+                  onAuxClick={onAux}
+                  onContextMenu={e => { e.preventDefault(); toggleFlagSafe(r, c) }}
+                  onPointerDown={onPointerDown}
+                  onPointerUp={onPointerUp}
+                  onPointerMove={onPointerMove}
+                  disabled={gameState === 'won' || gameState === 'lost'}
+                >
+                  {cell.isRevealed ? (
+                    cell.isMine ? '💣' : (
+                      cell.adjacentMines > 0 ? (
+                        <span className={NUMBER_CLASSES[cell.adjacentMines]}>
+                          {cell.adjacentMines}
+                        </span>
+                      ) : ''
+                    )
+                  ) : cell.isFlagged ? (
+                    <span className="flag-icon">⚑</span>
+                  ) : ''}
+                </button>
+                )
+              })
+            )}
+          </div>
         </div>
       </div>
 
       <div className="game-instructions">
         <p>
           <span className="desktop-only">Left-click to reveal • Right-click to flag • Middle-click for chord</span>
-          <span className="mobile-only">Tap to reveal • Long-press to flag</span>
+          <span className="mobile-only">Tap to reveal • Long-press to flag • Use Flag Mode for faster marking</span>
         </p>
       </div>
 

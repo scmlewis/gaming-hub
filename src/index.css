@@ -1,33 +1,35 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@400;500;600&display=swap');
 
 /* =====================================================
    GAMING HUB - Modern Design System
    ===================================================== */
 
 :root {
+  --font-body: 'Rajdhani', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Orbitron', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   /* Core Colors */
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #12121a;
-  --bg-tertiary: #1a1a24;
-  --bg-elevated: #1e1e2a;
+  --bg-primary: #0b0c12;
+  --bg-secondary: #121423;
+  --bg-tertiary: #191c2f;
+  --bg-elevated: #1f2238;
   
   /* Accent Colors */
-  --accent: #6366f1;
-  --accent-light: #818cf8;
-  --accent-dark: #4f46e5;
-  --accent-glow: rgba(99, 102, 241, 0.25);
+  --accent: #7a5cff;
+  --accent-light: #9a86ff;
+  --accent-dark: #5b3fd1;
+  --accent-glow: rgba(122, 92, 255, 0.28);
   
   /* Game-specific accents */
-  --sudoku-accent: #8b5cf6;
-  --minesweeper-accent: #f43f5e;
-  --game2048-accent: #f59e0b;
-  --wordle-accent: #22c55e;
+  --sudoku-accent: #7a5cff;
+  --minesweeper-accent: #ff5c7a;
+  --game2048-accent: #ffb347;
+  --wordle-accent: #44d18d;
   
   /* Text Colors */
-  --text-primary: #f8fafc;
-  --text-secondary: rgba(248, 250, 252, 0.7);
-  --text-tertiary: rgba(248, 250, 252, 0.5);
-  --text-muted: rgba(248, 250, 252, 0.3);
+  --text-primary: #f3f5ff;
+  --text-secondary: rgba(243, 245, 255, 0.72);
+  --text-tertiary: rgba(243, 245, 255, 0.5);
+  --text-muted: rgba(243, 245, 255, 0.3);
   
   /* Status Colors */
   --success: #22c55e;
@@ -38,17 +40,17 @@
   --warning-soft: rgba(245, 158, 11, 0.15);
   
   /* Borders & Shadows */
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-light: rgba(255, 255, 255, 0.1);
-  --border-focus: rgba(99, 102, 241, 0.5);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 40px var(--accent-glow);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-light: rgba(255, 255, 255, 0.12);
+  --border-focus: rgba(122, 92, 255, 0.55);
+  --shadow-sm: 0 6px 16px rgba(5, 7, 18, 0.35);
+  --shadow-md: 0 16px 40px rgba(5, 7, 18, 0.45);
+  --shadow-lg: 0 24px 60px rgba(5, 7, 18, 0.6);
+  --shadow-glow: 0 0 46px var(--accent-glow);
   
   /* Glass Effect */
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 0.12);
   
   /* Spacing */
   --radius-sm: 8px;
@@ -62,44 +64,7 @@
   --transition-slow: 0.4s ease;
 }
 
-/* Light Theme */
-[data-theme="light"] {
-  --bg-primary: #f8fafc;
-  --bg-secondary: #f1f5f9;
-  --bg-tertiary: #e2e8f0;
-  --bg-elevated: #ffffff;
-  
-  --text-primary: #0f172a;
-  --text-secondary: rgba(15, 23, 42, 0.7);
-  --text-tertiary: rgba(15, 23, 42, 0.5);
-  --text-muted: rgba(15, 23, 42, 0.3);
-  
-  --border-subtle: rgba(0, 0, 0, 0.06);
-  --border-light: rgba(0, 0, 0, 0.1);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.12);
-  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.15);
-  
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(0, 0, 0, 0.06);
-}
-
-/* High Contrast Theme */
-[data-theme="high-contrast"] {
-  --bg-primary: #000000;
-  --bg-secondary: #0a0a0a;
-  --bg-tertiary: #141414;
-  --bg-elevated: #1a1a1a;
-  
-  --accent: #ffff00;
-  --accent-light: #ffff66;
-  --accent-dark: #cccc00;
-  
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.9);
-  --border-subtle: rgba(255, 255, 255, 0.2);
-  --border-light: rgba(255, 255, 255, 0.3);
-}
+/* Light & High Contrast themes removed (dark-only UI) */
 
 /* =====================================================
    BASE STYLES
@@ -116,7 +81,7 @@ html, body, #root {
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-body);
   background: var(--bg-primary);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
@@ -143,10 +108,35 @@ body {
 
 .home-page {
   min-height: 100vh;
+  min-height: 100dvh;
   background: 
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.15), transparent),
+    radial-gradient(ellipse 70% 40% at 50% -10%, rgba(122, 92, 255, 0.2), transparent 60%),
+    radial-gradient(circle at 80% 10%, rgba(68, 209, 141, 0.12), transparent 40%),
     var(--bg-primary);
-  padding: 32px 24px 64px;
+  padding: 40px 24px 72px;
+}
+
+.app-root {
+  position: relative;
+  min-height: 100%;
+}
+
+.app-root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 3px 3px;
+  opacity: 0.18;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+  z-index: 0;
+}
+
+.app-root > * {
+  position: relative;
+  z-index: 1;
 }
 
 .home-header {
@@ -167,15 +157,21 @@ body {
   animation: float 3s ease-in-out infinite;
 }
 
+.brand-icon svg {
+  color: var(--accent);
+  filter: drop-shadow(0 6px 18px rgba(122, 92, 255, 0.35));
+}
+
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
 }
 
 .home-header h1 {
-  font-size: clamp(32px, 5vw, 48px);
-  font-weight: 800;
-  background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-light) 100%);
+  font-family: var(--font-display);
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff 0%, var(--accent-light) 60%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -185,28 +181,7 @@ body {
 .home-tagline {
   font-size: 18px;
   color: var(--text-secondary);
-  margin-bottom: 24px;
-}
-
-.theme-toggle {
-  display: inline-block;
-}
-
-.theme-btn {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-lg);
-  padding: 12px 20px;
-  font-size: 20px;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  backdrop-filter: blur(10px);
-}
-
-.theme-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--accent);
+  margin-bottom: 20px;
 }
 
 /* Games Grid */
@@ -245,9 +220,9 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--card-accent), transparent);
-  opacity: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--card-accent), rgba(255,255,255,0.02));
+  opacity: 1;
   transition: opacity var(--transition-normal);
 }
 
@@ -266,7 +241,7 @@ body {
   border-color: rgba(255, 255, 255, 0.12);
   box-shadow: 
     var(--shadow-lg),
-    0 0 60px rgba(99, 102, 241, 0.1);
+    0 0 60px rgba(122, 92, 255, 0.12);
 }
 
 .game-card:hover::before {
@@ -284,10 +259,17 @@ body {
   align-items: center;
   justify-content: center;
   font-size: 36px;
+  color: var(--card-accent);
   background: linear-gradient(135deg, var(--glass-bg), transparent);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  transition: transform var(--transition-normal);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+}
+
+.game-card-icon svg {
+  width: 36px;
+  height: 36px;
 }
 
 .game-card:hover .game-card-icon {
@@ -295,8 +277,9 @@ body {
 }
 
 .game-card-content h3 {
+  font-family: var(--font-display);
   font-size: 22px;
-  font-weight: 700;
+  font-weight: 600;
   margin-bottom: 8px;
   letter-spacing: -0.01em;
 }
@@ -304,7 +287,7 @@ body {
 .game-card-content p {
   font-size: 14px;
   color: var(--text-secondary);
-  line-height: 1.6;
+  line-height: 1.55;
 }
 
 .game-card-arrow {
@@ -322,6 +305,11 @@ body {
   border: 1px solid var(--border-subtle);
   border-radius: 50%;
   transition: all var(--transition-normal);
+}
+
+.game-card-arrow svg {
+  width: 18px;
+  height: 18px;
 }
 
 .game-card:hover .game-card-arrow {
@@ -344,8 +332,10 @@ body {
   --cell-size: min(var(--cell-size-h), var(--cell-size-w));
   
   min-height: 100vh;
+  min-height: 100dvh;
   background: 
-    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(99, 102, 241, 0.08), transparent),
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(122, 92, 255, 0.1), transparent),
+    radial-gradient(circle at 85% 10%, rgba(68, 209, 141, 0.08), transparent 45%),
     var(--bg-primary);
   padding: 24px;
 }
@@ -385,31 +375,40 @@ body {
 }
 
 .game-title {
+  font-family: var(--font-display);
   font-size: 24px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   flex: 1;
 }
 
-.theme-toggle-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-md);
-  font-size: 20px;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  backdrop-filter: blur(10px);
+.timer-value,
+.stat-value,
+.sudoku-numpad-btn,
+.sudoku-action-btn,
+.btn-primary,
+.btn-secondary,
+.btn-icon,
+.dropdown-button,
+select,
+.cell,
+.mine-cell,
+.wordle-tile,
+.keyboard-key {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
 }
 
-.theme-toggle-button:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--game-accent);
+.game-title-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 10px;
+  color: var(--game-accent);
+}
+
+.game-title-icon svg {
+  width: 22px;
+  height: 22px;
 }
 
 .header-spacer {
@@ -468,12 +467,12 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-fast);
-  box-shadow: 0 4px 16px rgba(var(--game-accent-rgb, 99, 102, 241), 0.25);
+  box-shadow: 0 8px 20px rgba(var(--game-accent-rgb, 122, 92, 255), 0.25);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(var(--game-accent-rgb, 99, 102, 241), 0.3);
+  box-shadow: 0 12px 28px rgba(var(--game-accent-rgb, 122, 92, 255), 0.35);
 }
 
 .btn-primary:active {
@@ -521,12 +520,18 @@ body {
   font-size: 18px;
   cursor: pointer;
   transition: all var(--transition-fast);
+  color: var(--text-primary);
 }
 
 .btn-icon:hover {
   background: rgba(255, 255, 255, 0.08);
   border-color: var(--border-light);
   transform: translateY(-2px);
+}
+
+.btn-icon svg {
+  width: 18px;
+  height: 18px;
 }
 
 /* =====================================================
@@ -659,6 +664,10 @@ select option {
   box-shadow: var(--shadow-md);
 }
 
+.sudoku-layout {
+  align-items: stretch;
+}
+
 .board-left {
   flex: 1;
   display: flex;
@@ -674,6 +683,96 @@ select option {
   position: sticky;
   top: 24px;
   align-self: flex-start;
+}
+
+.sudoku-side {
+  width: 200px;
+  min-width: 200px;
+  gap: 20px;
+}
+
+.sudoku-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  background: var(--glass-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+}
+
+.sudoku-action-btn {
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.sudoku-action-btn:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.sudoku-action-btn.active {
+  background: var(--accent-glow);
+  border-color: var(--accent);
+  color: var(--accent-light);
+}
+
+.sudoku-numpad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  background: var(--glass-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+}
+
+.sudoku-numpad-btn {
+  height: 52px;
+  border-radius: 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.sudoku-numpad-btn.wide {
+  grid-column: span 3;
+  height: 44px;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.sudoku-action-row {
+  display: flex;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--radius-lg);
+  background: var(--glass-bg);
+  border: 1px solid var(--border-subtle);
+  margin-bottom: 12px;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.sudoku-action-row .sudoku-action-btn {
+  flex: 1 1 0;
+  height: 40px;
+  font-size: 16px;
 }
 
 .board {
@@ -693,14 +792,14 @@ select option {
 /* Block separators for 9x9 using borders */
 .board[data-size="9"] .row > .cell:nth-child(3),
 .board[data-size="9"] .row > .cell:nth-child(6) {
-  border-right: 3px solid rgba(var(--game-accent-rgb, 99, 102, 241), 0.8);
-  box-shadow: 3px 0 8px rgba(var(--game-accent-rgb, 99, 102, 241), 0.3);
+  border-right: 3px solid rgba(var(--game-accent-rgb, 99, 102, 241), 0.95);
+  box-shadow: none;
 }
 
 .board[data-size="9"] > .row:nth-child(3) .cell,
 .board[data-size="9"] > .row:nth-child(6) .cell {
-  border-bottom: 3px solid rgba(var(--game-accent-rgb, 99, 102, 241), 0.8);
-  box-shadow: 0 3px 8px rgba(var(--game-accent-rgb, 99, 102, 241), 0.3);
+  border-bottom: 3px solid rgba(var(--game-accent-rgb, 99, 102, 241), 0.95);
+  box-shadow: none;
 }
 
 /* Block separators for 6x6 */
@@ -724,10 +823,10 @@ select option {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   font-size: calc(var(--cell-size) * 0.45);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all var(--transition-fast), box-shadow var(--transition-fast);
   user-select: none;
 }
 
@@ -738,7 +837,7 @@ select option {
 
 .cell-fixed {
   background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
-  color: var(--text-secondary);
+  color: var(--text-primary);
   font-weight: 800;
   cursor: default;
 }
@@ -749,20 +848,34 @@ select option {
 }
 
 .cell-fixed--outlined {
-  background: var(--bg-tertiary);
-  border: 2px solid var(--game-accent);
-  color: var(--game-accent);
+  background: linear-gradient(135deg, rgba(139,92,246,0.06), transparent);
+  border: 2px solid rgba(var(--game-accent-rgb, 99, 102, 241), 0.9);
+  color: var(--text-primary);
+}
+
+/* user-entered values get a slightly softer accent but high contrast */
+.cell-user {
+  color: var(--text-primary);
+  font-weight: 700;
 }
 
 .cell-selected {
-  background: var(--accent-glow);
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent-glow);
-  z-index: 2;
+  background: linear-gradient(135deg, rgba(var(--game-accent-rgb, 99, 102, 241), 0.14), rgba(var(--game-accent-rgb, 99, 102, 241), 0.08));
+  border-color: var(--border-focus);
+  box-shadow: 0 8px 30px rgba(var(--game-accent-rgb, 99, 102, 241), 0.14), 0 0 0 3px rgba(var(--game-accent-rgb, 99, 102, 241), 0.06);
+  z-index: 5;
+  transform: translateY(-2px);
 }
 
 .cell-peer {
-  background: rgba(99, 102, 241, 0.08);
+  background: rgba(var(--game-accent-rgb, 99, 102, 241), 0.06);
+  border-color: rgba(var(--game-accent-rgb, 99, 102, 241), 0.12);
+}
+
+/* visible focus for keyboard users */
+.cell:focus-visible {
+  outline: 3px solid var(--border-focus);
+  outline-offset: 2px;
 }
 
 .cell-wrong,
@@ -806,18 +919,18 @@ select option {
   background: var(--bg-tertiary);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  padding: 16px 20px;
+  padding: 12px 16px;
   display: inline-flex;
   justify-content: space-between;
   align-items: center;
-  gap: 24px;
+  gap: 16px;
   margin-bottom: 16px;
   margin-left: auto;
   margin-right: auto;
 }
 
 .timer-value {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   letter-spacing: 2px;
@@ -863,12 +976,85 @@ select option {
   color: var(--accent-light);
 }
 
+.board-actions-secondary.mobile {
+  width: 100%;
+  flex-wrap: wrap;
+  display: none;
+}
+
+.board-actions-secondary.mobile.open {
+  display: flex;
+}
+
+.sudoku-mobile-controls {
+  display: none;
+}
+
+.mobile-actions-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1100;
+}
+
+.mobile-actions-sheet {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: var(--shadow-lg);
+}
+
+.mobile-actions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.mobile-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.mobile-actions-grid button {
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--glass-bg);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
 /* =====================================================
    MINESWEEPER
    ===================================================== */
 
 .minesweeper-container {
   text-align: center;
+}
+
+.minesweeper-grid-wrap {
+  max-width: 100%;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.minesweeper-hint {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-bottom: 6px;
 }
 
 .minesweeper-stats {
@@ -941,6 +1127,7 @@ select option {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
+  touch-action: manipulation;
 }
 
 .mine-cell {
@@ -1198,6 +1385,113 @@ select option {
   animation: shake 0.4s ease;
 }
 
+/* =====================================================
+   MOBILE / TOUCH ADJUSTMENTS
+   ===================================================== */
+
+/* When mobile keypad is open, prevent layout jumps by adding bottom padding */
+.mobile-keypad-open body {
+  padding-bottom: 220px; /* matches keypad height below */
+}
+
+/* Mobile keypad UI */
+.mobile-keypad {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: env(safe-area-inset-bottom, 0);
+  height: calc(220px + env(safe-area-inset-bottom, 0));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, var(--bg-elevated), var(--bg-secondary));
+  border-top: 1px solid var(--border-subtle);
+  box-shadow: 0 -12px 40px rgba(0,0,0,0.6);
+  z-index: 9999;
+  touch-action: manipulation;
+}
+
+.mobile-keypad .keypad-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mobile-keypad .keypad-close {
+  background: var(--glass-bg);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-size: 18px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+}
+
+.mobile-keypad .keypad-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+.mobile-keypad .keypad-key {
+  flex: 1 1 0;
+  min-width: 56px;
+  min-height: 56px;
+  padding: 10px;
+  border-radius: 12px;
+  background: var(--glass-bg);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.mobile-keypad .keypad-key:active {
+  transform: translateY(-2px);
+}
+
+/* Larger cell and reduced hover/shine on touch devices */
+@media (max-width: 768px) {
+  .board {
+    gap: 6px;
+  }
+  .row {
+    gap: 6px;
+  }
+  .cell {
+    border-radius: 10px;
+    font-size: calc(var(--cell-size) * 0.5);
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* reduce heavy shadows/glows for small screens */
+  .cell-selected {
+    box-shadow: 0 8px 20px rgba(var(--game-accent-rgb, 99, 102, 241), 0.12), 0 0 0 2px rgba(var(--game-accent-rgb, 99, 102, 241), 0.05);
+  }
+}
+
+/* Remove hover transitions for devices that don't support hover */
+@media (hover: none) {
+  .cell:hover, .btn-secondary:hover, .btn-icon:hover, .game-card:hover .game-card-icon {
+    transform: none;
+    box-shadow: none;
+  }
+  .cell { transition: background-color 0.12s ease, border-color 0.12s ease; }
+}
+
+/* Slightly increase hit area for notes / keypad interaction on small screens */
+@media (max-width: 480px) {
+  .mobile-keypad { height: 260px; }
+  .mobile-keypad-open body { padding-bottom: 260px; }
+  .mobile-keypad .keypad-key { min-height: 64px; font-size: 20px; }
+}
+
 .wordle-tile {
   width: 62px;
   height: 62px;
@@ -1251,10 +1545,14 @@ select option {
 .keyboard-row {
   display: flex;
   gap: 6px;
+  width: 100%;
+  max-width: 520px;
+  justify-content: center;
 }
 
 .keyboard-key {
-  min-width: 44px;
+  flex: 1 1 0;
+  min-width: 36px;
   height: 56px;
   display: flex;
   align-items: center;
@@ -1268,6 +1566,7 @@ select option {
   cursor: pointer;
   transition: all var(--transition-fast);
   color: var(--text-primary);
+  touch-action: manipulation;
 }
 
 .keyboard-key:hover {
@@ -1276,7 +1575,8 @@ select option {
 }
 
 .keyboard-key.wide {
-  min-width: 68px;
+  flex: 1.5 1 0;
+  min-width: 52px;
   font-size: 12px;
 }
 
@@ -1353,6 +1653,8 @@ select option {
   z-index: 1001;
   animation: messageAppear 0.4s ease;
   box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  overflow: hidden;
 }
 
 @keyframes messageAppear {
@@ -1367,15 +1669,15 @@ select option {
 }
 
 .game-message.won {
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.95), rgba(16, 185, 129, 0.95));
-  border: 2px solid rgba(34, 197, 94, 0.5);
+  background: linear-gradient(135deg, rgba(34, 197, 94, 1), rgba(16, 185, 129, 1));
+  border-color: rgba(34, 197, 94, 0.65);
   color: white;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .game-message.lost {
-  background: linear-gradient(135deg, rgba(244, 63, 94, 0.95), rgba(239, 68, 68, 0.95));
-  border: 2px solid rgba(244, 63, 94, 0.5);
+  background: linear-gradient(135deg, rgba(244, 63, 94, 1), rgba(239, 68, 68, 1));
+  border-color: rgba(244, 63, 94, 0.65);
   color: white;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
@@ -1454,13 +1756,25 @@ select option {
   margin-bottom: 24px;
 }
 
+/* When dev mode is active, float config modals a bit higher to avoid the dev panel */
+html[data-dev-mode="true"] .modal-overlay {
+  align-items: flex-start;
+  padding: 88px 24px 140px;
+}
+
+html[data-dev-mode="true"] .modal {
+  max-height: calc(100vh - 180px);
+  overflow: auto;
+}
+
 /* =====================================================
    DEV PANEL
    ===================================================== */
 
 .dev-panel {
   position: fixed;
-  bottom: 20px;
+  /* lift the panel above the FAB so they don't overlap */
+  bottom: 84px;
   right: 20px;
   background: linear-gradient(135deg, var(--bg-elevated), var(--bg-tertiary));
   border: 2px solid var(--danger);
@@ -1471,6 +1785,54 @@ select option {
   z-index: 9999;
   font-size: 13px;
 }
+
+/* Floating dev-mode toggle (FAB) — positioned out of document flow to avoid layout shifts */
+.dev-mode-fab {
+  position: fixed;
+  /* primary placement: bottom-right near other action buttons */
+  bottom: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+  z-index: 10001;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.dev-mode-fab.active {
+  background: linear-gradient(135deg, var(--danger), var(--accent));
+  color: #fff;
+  transform: scale(1.02);
+}
+
+/* On narrow viewports, move the FAB to the top-right to avoid covering content */
+@media (max-width: 640px) {
+  .dev-mode-fab {
+    top: 16px;
+    right: 16px;
+    bottom: auto;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+  }
+  .dev-panel {
+    bottom: 72px; /* keep a little gap from the FAB */
+    right: 12px;
+    left: 12px;
+    max-width: calc(100% - 24px);
+  }
+}
+
+/* Ensure the fab doesn't cause layout when focus outlines appear */
+.dev-mode-fab:focus { outline: none; box-shadow: 0 0 0 3px rgba(99,102,241,0.12); }
 
 .dev-panel-header {
   display: flex;
@@ -1586,6 +1948,81 @@ select option {
 }
 
 /* =====================================================
+   DEV LOGIN (PASSWORD PROMPT)
+   ===================================================== */
+
+.dev-password-overlay {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 30% 20%, rgba(122, 92, 255, 0.15), transparent 45%),
+              rgba(5, 7, 18, 0.82);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10002;
+  animation: fadeIn 0.2s ease;
+}
+
+.dev-password-modal {
+  width: min(420px, 92vw);
+  background: linear-gradient(145deg, rgba(31, 34, 56, 0.98), rgba(18, 20, 35, 0.98));
+  border: 1px solid rgba(122, 92, 255, 0.35);
+  border-radius: var(--radius-xl);
+  padding: 28px;
+  box-shadow: 0 24px 64px rgba(5, 7, 18, 0.55), 0 0 36px rgba(122, 92, 255, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: modalSlide 0.25s ease;
+}
+
+.dev-password-modal h3 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  letter-spacing: 0.4px;
+}
+
+.dev-password-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  background: rgba(9, 11, 20, 0.7);
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.dev-password-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(122, 92, 255, 0.25);
+}
+
+.dev-password-error {
+  color: var(--danger);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.dev-password-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+@media (max-width: 640px) {
+  html[data-dev-mode="true"] .modal-overlay {
+    padding: 72px 16px 120px;
+  }
+
+  .dev-password-modal {
+    padding: 22px;
+  }
+}
+
+/* =====================================================
    RESPONSIVE
    ===================================================== */
 
@@ -1620,9 +2057,23 @@ select option {
   }
   
   .game-layout {
-    padding: 16px;
+    padding: 12px;
   }
-  
+
+  .game-header {
+    margin: 0 auto 12px;
+    gap: 10px;
+  }
+
+  .game-title {
+    font-size: 20px;
+  }
+
+  .back-button {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
   .board-card {
     padding: 12px;
   }
@@ -1630,7 +2081,8 @@ select option {
   .game-toolbar {
     flex-direction: column;
     align-items: stretch;
-    gap: 12px;
+    gap: 10px;
+    margin-bottom: 12px;
   }
   
   .toolbar-group {
@@ -1639,7 +2091,34 @@ select option {
   
   .board-card {
     flex-direction: column;
-    padding: 16px;
+    padding: 12px;
+  }
+
+  .sudoku-side {
+    display: none;
+  }
+
+  .sudoku-mobile-controls {
+    display: flex;
+  }
+
+  .sudoku-action-row.mobile-only {
+    display: flex;
+  }
+
+  .sudoku-action-row {
+    gap: 6px;
+    padding: 6px 8px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    justify-items: center;
+  }
+
+  .sudoku-action-row .sudoku-action-btn {
+    min-width: 48px;
+    height: 48px;
+    font-size: 18px;
+    border-radius: 12px;
   }
   
   .row {
@@ -1663,21 +2142,87 @@ select option {
   }
   
   .timer-display {
-    padding: 12px 16px;
-    gap: 16px;
+    padding: 8px 10px;
+    gap: 10px;
+    margin-bottom: 10px;
   }
   
   .timer-value {
-    font-size: 20px;
+    font-size: 16px;
+  }
+
+  .timer-actions button {
+    font-size: 11px;
+    padding: 6px 10px;
   }
   
   .board-controls button {
     font-size: 13px;
     padding: 8px 14px;
   }
+
+  .game-toolbar .btn-primary {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .game-toolbar select,
+  .game-toolbar .dropdown-button {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  /* Mobile numeric keypad styling */
+  .mobile-keypad {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: env(safe-area-inset-bottom, 0);
+    background: var(--bg-secondary);
+    padding: 10px;
+    box-shadow: 0 -8px 20px rgba(0,0,0,0.35);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    z-index: 1200;
+  }
+
+  .mobile-keypad .keypad-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 4px;
+  }
+
+  .keypad-close {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 18px;
+    padding: 6px 8px;
+  }
+
+  .mobile-keypad .keypad-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .keypad-key {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    padding: 12px 6px;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  /* Make sure board content isn't hidden behind keypad when keypad is open */
+  .mobile-keypad-open .board-card { padding-bottom: calc(160px + env(safe-area-inset-bottom, 0)); }
   
   .board-info {
-    font-size: 13px;
+    font-size: 11px;
+    margin-top: 8px;
   }
   
   .modal {
@@ -1900,14 +2445,21 @@ select option {
   }
   
   .keyboard-key {
-    min-width: 30px;
+    min-width: 28px;
     height: 44px;
     font-size: 12px;
   }
   
   .keyboard-key.wide {
-    min-width: 48px;
+    min-width: 44px;
     font-size: 10px;
+  }
+
+  .wordle-message {
+    top: 20%;
+    transform: translate(-50%, -20%);
+    width: calc(100% - 32px);
+    text-align: center;
   }
 }
 
@@ -1918,53 +2470,6 @@ select option {
 
 .mobile-only {
   display: none;
-}
-
-/* Light theme specific adjustments */
-[data-theme="light"] .game-card {
-  box-shadow: var(--shadow-sm);
-}
-
-[data-theme="light"] .game-card:hover {
-  box-shadow: var(--shadow-lg);
-}
-
-[data-theme="light"] .cell-fixed {
-  color: var(--text-primary);
-}
-
-[data-theme="light"] .stat {
-  background: linear-gradient(135deg, rgba(180, 180, 180, 0.8), rgba(150, 150, 150, 0.9));
-  border: 2px solid rgba(120, 120, 120, 0.9);
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] .stat-display {
-  background: linear-gradient(135deg, #d4d4d4, #c0c0c0);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(100, 100, 100, 0.6);
-}
-
-[data-theme="light"] .stat-ghost {
-  color: rgba(var(--game-accent-rgb, 244, 63, 94), 0.2);
-}
-
-[data-theme="light"] .stat-value {
-  color: var(--game-accent);
-  text-shadow: 
-    0 0 6px rgba(var(--game-accent-rgb, 244, 63, 94), 0.6),
-    0 0 12px rgba(var(--game-accent-rgb, 244, 63, 94), 0.4),
-    0 0 18px rgba(var(--game-accent-rgb, 244, 63, 94), 0.2);
-  filter: brightness(1);
-}
-
-[data-theme="light"] .wordle-tile.absent {
-  background: var(--bg-tertiary);
-  color: var(--text-secondary);
-}
-
-[data-theme="light"] .keyboard-key.absent {
-  color: var(--text-secondary);
 }
 
 /* Footer */
@@ -2153,4 +2658,7 @@ select option {
   font-size: 13px;
   color: var(--text-tertiary);
   margin-top: 12px;
+}
+button, input, select, textarea {
+  font-family: inherit;
 }

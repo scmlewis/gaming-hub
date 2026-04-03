@@ -1,6 +1,7 @@
 import React, { useState, useEffect, createContext, useContext } from 'react'
 
-const DEV_PASSWORD = '1234'
+// Read dev password from Vite env. Do NOT commit secrets to source control.
+const DEV_PASSWORD = (import.meta.env.VITE_DEV_PASSWORD as string) || ''
 const DEV_MODE_KEY = 'gaming_hub_dev_mode'
 
 // Context to share dev mode state
@@ -17,6 +18,14 @@ export function DevModeProvider({ children }: { children: React.ReactNode }) {
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false)
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (isDevMode) {
+      document.documentElement.setAttribute('data-dev-mode', 'true')
+    } else {
+      document.documentElement.removeAttribute('data-dev-mode')
+    }
+  }, [isDevMode])
 
   const toggleDevMode = () => {
     if (isDevMode) {

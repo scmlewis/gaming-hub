@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react'
 import GameLayout from '../components/GameLayout'
+import Icon from '../components/icons'
 import DevPanel, { DevButton, DevInfo, DevSection, useDevMode } from '../components/DevPanel'
 import { STORAGE_KEYS, MAX_MOVE_HISTORY } from '../constants'
 import { TILE_THEMES } from '../utils/themes2048'
@@ -68,6 +69,12 @@ export default function Game2048Page() {
   const isDevMode = useDevMode()
   const isAnimating = useRef(false)
 
+  const triggerHaptic = (ms: number) => {
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      navigator.vibrate(ms)
+    }
+  }
+
   // Initialize on mount - sync grid and tiles
   useEffect(() => {
     const initialGrid = initGame()
@@ -100,6 +107,7 @@ export default function Game2048Page() {
     const { grid: newGrid, score: addedScore, moved } = move(grid, direction)
     
     if (!moved) return
+    triggerHaptic(8)
 
     // Clear hint when move is made
     setHint(null)
@@ -319,7 +327,7 @@ export default function Game2048Page() {
   }
 
   return (
-    <GameLayout title="2048" color={getAccentColor(tileTheme)} icon="🎯">
+    <GameLayout title="2048" color={getAccentColor(tileTheme)} icon={<Icon name="game2048" />}>
       <div className="game-2048-header">
         <div className="game-2048-scores">
           <div className="game-2048-score-box">
@@ -332,8 +340,10 @@ export default function Game2048Page() {
           </div>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <button onClick={startNewGame} className="btn-primary game-2048-new-btn">✨ New Game</button>
-          <button onClick={() => setSettingsOpen(true)} className="btn-icon" aria-label="Settings">⚙️</button>
+          <button onClick={startNewGame} className="btn-primary game-2048-new-btn">New Game</button>
+          <button onClick={() => setSettingsOpen(true)} className="btn-icon" aria-label="Settings">
+            <Icon name="settings" size={18} />
+          </button>
         </div>
       </div>
 
@@ -507,12 +517,14 @@ export default function Game2048Page() {
               📎 Spawn 1024
             </DevButton>
             <DevButton onClick={() => {
-              setScore(s => s + 1000)
-              const newScore = score + 1000
-              if (newScore > bestScore) {
-                setBestScore(newScore)
-                localStorage.setItem('2048-best', String(newScore))
-              }
+              setScore(s => {
+                const newScore = s + 1000
+                if (newScore > bestScore) {
+                  setBestScore(newScore)
+                  localStorage.setItem(STORAGE_KEYS.GAME_2048_BEST, String(newScore))
+                }
+                return newScore
+              })
             }} variant="default">
               ➕ Add 1000 Points
             </DevButton>

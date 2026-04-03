@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import GameLayout from '../components/GameLayout'
+import Icon from '../components/icons'
 import Dropdown from '../components/Dropdown'
 import DevPanel, { DevButton, DevInfo, DevSection, useDevMode } from '../components/DevPanel'
 import { STORAGE_KEYS } from '../constants'
@@ -52,6 +53,12 @@ export default function WordlePage() {
   const [skipValidation, setSkipValidation] = useState(false)
   const isDevMode = useDevMode()
   const [keyStates, setKeyStates] = useState<Record<string, LetterState>>({})
+
+  const triggerHaptic = (ms: number) => {
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      navigator.vibrate(ms)
+    }
+  }
   
   // Save language preference
   useEffect(() => {
@@ -126,10 +133,13 @@ export default function WordlePage() {
     if (gameState !== 'playing') return
 
     if (key === 'ENTER') {
+      triggerHaptic(10)
       submitGuess()
     } else if (key === '⌫' || key === 'BACKSPACE') {
+      triggerHaptic(6)
       setCurrentGuess(prev => prev.slice(0, -1))
     } else if (/^[A-Z]$/.test(key) && currentGuess.length < 5) {
+      triggerHaptic(4)
       setCurrentGuess(prev => prev + key)
     }
   }
@@ -142,52 +152,7 @@ export default function WordlePage() {
       const key = e.key.toUpperCase()
       if (key === 'ENTER') {
         e.preventDefault()
-        // Inline submit logic to avoid stale closure
-        if (currentGuess.length !== 5) {
-          setShake(true)
-          setTimeout(() => setShake(false), 500)
-          setMessage('Not enough letters')
-          setTimeout(() => setMessage(null), 1500)
-          return
-        }
-
-        if (!skipValidation && !isValidWord(currentGuess)) {
-          setShake(true)
-          setTimeout(() => setShake(false), 500)
-          setMessage('Not in word list')
-          setTimeout(() => setMessage(null), 1500)
-          return
-        }
-
-        const result = checkGuess(currentGuess, answer)
-        const newGuesses = [...guesses, result]
-        setGuesses(newGuesses)
-
-        // Update keyboard states
-        const newKeyStates = { ...keyStates }
-        result.forEach(({ letter, state }) => {
-          const current = newKeyStates[letter]
-          if (state === 'correct') {
-            newKeyStates[letter] = 'correct'
-          } else if (state === 'present' && current !== 'correct') {
-            newKeyStates[letter] = 'present'
-          } else if (!current) {
-            newKeyStates[letter] = 'absent'
-          }
-        })
-        setKeyStates(newKeyStates)
-
-        setCurrentGuess('')
-
-        if (currentGuess.toUpperCase() === answer) {
-          setGameState('won')
-          setMessage('Excellent!')
-          setTimeout(() => setMessage(null), 3000)
-        } else if (newGuesses.length >= MAX_GUESSES) {
-          setGameState('lost')
-          setMessage(answer)
-          setTimeout(() => setMessage(null), 5000)
-        }
+        submitGuess()
       } else if (key === 'BACKSPACE') {
         e.preventDefault()
         setCurrentGuess(prev => prev.slice(0, -1))
@@ -212,7 +177,7 @@ export default function WordlePage() {
   }
 
   return (
-    <GameLayout title="Wordle" color="#22c55e" icon="✨">
+    <GameLayout title="Wordle" color="#22c55e" icon={<Icon name="wordle" />}>
       <div className="wordle-page">
         <div style={{ 
           display: 'flex', 
@@ -237,7 +202,7 @@ export default function WordlePage() {
             Guess {Math.min(guesses.length + 1, MAX_GUESSES)}/{MAX_GUESSES}
           </span>
           <button onClick={startNewGame} className="btn-primary" style={{ padding: '8px 16px', fontSize: '14px', flex: '0 0 auto', whiteSpace: 'nowrap' }}>
-            🎲 New
+            New
           </button>
         </div>
 
@@ -280,7 +245,7 @@ export default function WordlePage() {
 
         {gameState !== 'playing' && (
           <div className={`game-message ${gameState}`}>
-            {gameState === 'won' ? '🎉 You got it!' : `The word was: ${answer}`}
+            {gameState === 'won' ? 'You got it!' : `The word was: ${answer}`}
             <button onClick={startNewGame} className="btn-primary" style={{ marginLeft: 12 }}>
               Play Again
             </button>

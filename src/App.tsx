@@ -9,19 +9,20 @@ import WordlePage from './pages/WordlePage'
 export default function App() {
   useEffect(() => {
     // Apply saved theme on mount
-    const theme = localStorage.getItem('theme') || 'dark'
-    document.documentElement.setAttribute('data-theme', theme)
+    document.documentElement.setAttribute('data-theme', 'dark')
   }, [])
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/sudoku" element={<SudokuPage />} />
-        <Route path="/minesweeper" element={<MinesweeperPage />} />
-        <Route path="/2048" element={<Game2048Page />} />
-        <Route path="/wordle" element={<WordlePage />} />
-      </Routes>
-    </BrowserRouter>
+    <div className="app-root">
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/sudoku" element={<SudokuPage />} />
+          <Route path="/minesweeper" element={<MinesweeperPage />} />
+          <Route path="/2048" element={<Game2048Page />} />
+          <Route path="/wordle" element={<WordlePage />} />
+        </Routes>
+      </BrowserRouter>
+    </div>
   )
 }
