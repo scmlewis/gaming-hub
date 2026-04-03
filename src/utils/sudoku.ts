@@ -1,24 +1,33 @@
 // Minimal Sudoku utilities: placeholders for generator and solver
-import seedrandom from 'seedrandom'
+import seedrandom from 'seedrandom';
 
-export type Grid = (number | null)[][]
+export type Grid = (number | null)[][];
 
 function cloneGrid(grid: Grid): Grid {
-  return grid.map(row => row.slice())
+  return grid.map((row) => row.slice());
 }
 
 function sizeInfoFromGrid(grid: Grid) {
-  const n = grid.length
-  let blockRows = 3
-  let blockCols = 3
-  if (n === 6) { blockRows = 2; blockCols = 3 }
-  else if (n === 9) { blockRows = 3; blockCols = 3 }
-  else {
-    const r = Math.floor(Math.sqrt(n))
-    if (r * r === n) { blockRows = r; blockCols = r }
-    else { blockRows = Math.floor(Math.sqrt(n)); blockCols = n / blockRows }
+  const n = grid.length;
+  let blockRows = 3;
+  let blockCols = 3;
+  if (n === 6) {
+    blockRows = 2;
+    blockCols = 3;
+  } else if (n === 9) {
+    blockRows = 3;
+    blockCols = 3;
+  } else {
+    const r = Math.floor(Math.sqrt(n));
+    if (r * r === n) {
+      blockRows = r;
+      blockCols = r;
+    } else {
+      blockRows = Math.floor(Math.sqrt(n));
+      blockCols = n / blockRows;
+    }
   }
-  return { n, blockRows, blockCols }
+  return { n, blockRows, blockCols };
 }
 
 /**
@@ -32,20 +41,21 @@ function sizeInfoFromGrid(grid: Grid) {
  * @returns True if the move is valid, false otherwise
  */
 export function isValidMove(grid: Grid, row: number, col: number, value: number): boolean {
-  const { n, blockRows, blockCols } = sizeInfoFromGrid(grid)
-  if (value < 1 || value > n) return false
-  for (let c = 0; c < n; c++) if (grid[row][c] === value) return false
-  for (let r = 0; r < n; r++) if (grid[r][col] === value) return false
-  const br = Math.floor(row / blockRows) * blockRows
-  const bc = Math.floor(col / blockCols) * blockCols
-  for (let r = br; r < br + blockRows; r++) for (let c = bc; c < bc + blockCols; c++) if (grid[r][c] === value) return false
-  return true
+  const { n, blockRows, blockCols } = sizeInfoFromGrid(grid);
+  if (value < 1 || value > n) return false;
+  for (let c = 0; c < n; c++) if (grid[row][c] === value) return false;
+  for (let r = 0; r < n; r++) if (grid[r][col] === value) return false;
+  const br = Math.floor(row / blockRows) * blockRows;
+  const bc = Math.floor(col / blockCols) * blockCols;
+  for (let r = br; r < br + blockRows; r++)
+    for (let c = bc; c < bc + blockCols; c++) if (grid[r][c] === value) return false;
+  return true;
 }
 
 function findEmpty(grid: Grid): [number, number] | null {
-  const n = grid.length
-  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (!grid[r][c]) return [r, c]
-  return null
+  const n = grid.length;
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (!grid[r][c]) return [r, c];
+  return null;
 }
 
 /**
@@ -55,88 +65,94 @@ function findEmpty(grid: Grid): [number, number] | null {
  * @returns The solved grid, or null if no solution exists
  */
 export function solveSudoku(grid: Grid): Grid | null {
-  const g = cloneGrid(grid)
-  const n = g.length
+  const g = cloneGrid(grid);
+  const n = g.length;
 
   function backtrack(): boolean {
-    const empty = findEmpty(g)
-    if (!empty) return true
-    const [r, c] = empty
+    const empty = findEmpty(g);
+    if (!empty) return true;
+    const [r, c] = empty;
     for (let num = 1; num <= n; num++) {
       if (isValidMove(g, r, c, num)) {
-        g[r][c] = num
-        if (backtrack()) return true
-        g[r][c] = null
+        g[r][c] = num;
+        if (backtrack()) return true;
+        g[r][c] = null;
       }
     }
-    return false
+    return false;
   }
 
-  return backtrack() ? g : null
+  return backtrack() ? g : null;
 }
 
 // Count solutions but stop after reaching limit (default 2)
 function countSolutions(grid: Grid, limit = 2): number {
-  const g = cloneGrid(grid)
-  const n = g.length
-  let count = 0
+  const g = cloneGrid(grid);
+  const n = g.length;
+  let count = 0;
 
   function backtrack(): boolean {
-    if (count >= limit) return true
-    const empty = findEmpty(g)
+    if (count >= limit) return true;
+    const empty = findEmpty(g);
     if (!empty) {
-      count++
-      return false
+      count++;
+      return false;
     }
-    const [r, c] = empty
+    const [r, c] = empty;
     for (let num = 1; num <= n; num++) {
       if (isValidMove(g, r, c, num)) {
-        g[r][c] = num
-        backtrack()
-        g[r][c] = null
-        if (count >= limit) return true
+        g[r][c] = num;
+        backtrack();
+        g[r][c] = null;
+        if (count >= limit) return true;
       }
     }
-    return false
+    return false;
   }
 
-  backtrack()
-  return count
+  backtrack();
+  return count;
 }
 
 function shuffle<T>(arr: T[], rng: () => number): T[] {
   for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1))
-    ;[arr[i], arr[j]] = [arr[j], arr[i]]
+    const j = Math.floor(rng() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
-  return arr
+  return arr;
 }
 
-function generateFullSolution(n = 9, blockRows?: number, blockCols?: number, rng: () => number = Math.random): Grid {
-  const grid: Grid = Array.from({ length: n }, () => Array(n).fill(null))
-  const br = blockRows ?? (n === 6 ? 2 : Math.floor(Math.sqrt(n)))
-  const bc = blockCols ?? (n === 6 ? 3 : Math.floor(Math.sqrt(n)))
+function generateFullSolution(
+  n = 9,
+  _blockRows?: number,
+  _blockCols?: number,
+  rng: () => number = Math.random
+): Grid {
+  const grid: Grid = Array.from({ length: n }, () => Array(n).fill(null));
 
   function backtrack(): boolean {
-    const empty = findEmpty(grid)
-    if (!empty) return true
-    const [r, c] = empty
-    const nums = shuffle(Array.from({ length: n }, (_, i) => i + 1), rng)
+    const empty = findEmpty(grid);
+    if (!empty) return true;
+    const [r, c] = empty;
+    const nums = shuffle(
+      Array.from({ length: n }, (_, i) => i + 1),
+      rng
+    );
     for (const num of nums) {
       if (isValidMove(grid, r, c, num)) {
-        grid[r][c] = num
-        if (backtrack()) return true
-        grid[r][c] = null
+        grid[r][c] = num;
+        if (backtrack()) return true;
+        grid[r][c] = null;
       }
     }
-    return false
+    return false;
   }
 
-  backtrack()
-  return grid
+  backtrack();
+  return grid;
 }
 
-import { CLUES_BY_DIFFICULTY_9X9 } from '../constants'
+import { CLUES_BY_DIFFICULTY_9X9 } from '../constants';
 
 /**
  * Generates a Sudoku puzzle of the specified difficulty and size.
@@ -148,46 +164,46 @@ import { CLUES_BY_DIFFICULTY_9X9 } from '../constants'
  * @returns An object containing the puzzle grid and the seed used
  */
 export function generateSudoku(
-  difficulty: 'easy' | 'medium' | 'hard' = 'easy', 
+  difficulty: 'easy' | 'medium' | 'hard' = 'easy',
   size = 9,
   seed?: string
 ): { puzzle: Grid; solution: Grid; seed: string } {
   // Use provided seed or generate new one
-  const usedSeed = seed || Date.now().toString(36) + Math.random().toString(36).substring(2)
-  const rng = seedrandom(usedSeed)
-  
+  const usedSeed = seed || Date.now().toString(36) + Math.random().toString(36).substring(2);
+  const rng = seedrandom(usedSeed);
+
   // Generate a complete solution then remove numbers while keeping uniqueness
-  const blockRows = size === 6 ? 2 : Math.floor(Math.sqrt(size))
-  const blockCols = size === 6 ? 3 : Math.floor(Math.sqrt(size))
-  const solution = generateFullSolution(size, blockRows, blockCols, rng)
-  const puzzle = cloneGrid(solution)
+  const blockRows = size === 6 ? 2 : Math.floor(Math.sqrt(size));
+  const blockCols = size === 6 ? 3 : Math.floor(Math.sqrt(size));
+  const solution = generateFullSolution(size, blockRows, blockCols, rng);
+  const puzzle = cloneGrid(solution);
 
   // scale targets for different sizes (heuristic)
-  const total = size * size
+  const total = size * size;
   const baseTarget =
     size === 9
       ? CLUES_BY_DIFFICULTY_9X9[difficulty] ?? CLUES_BY_DIFFICULTY_9X9.easy
-      : Math.max(Math.floor(total * 0.5), 6)
+      : Math.max(Math.floor(total * 0.5), 6);
 
-  const targetClues = baseTarget
+  const targetClues = baseTarget;
   const positions = shuffle(
     Array.from({ length: total }, (_, i) => [Math.floor(i / size), i % size] as [number, number]),
     rng
-  )
+  );
 
-  let clues = total
+  let clues = total;
   for (const [r, c] of positions) {
-    if (clues <= targetClues) break
-    const backup = puzzle[r][c]
-    puzzle[r][c] = null
+    if (clues <= targetClues) break;
+    const backup = puzzle[r][c];
+    puzzle[r][c] = null;
     // ensure unique solution
-    const sols = countSolutions(puzzle, 2)
+    const sols = countSolutions(puzzle, 2);
     if (sols !== 1) {
-      puzzle[r][c] = backup
+      puzzle[r][c] = backup;
     } else {
-      clues--
+      clues--;
     }
   }
 
-  return { puzzle, solution, seed: usedSeed }
+  return { puzzle, solution, seed: usedSeed };
 }
