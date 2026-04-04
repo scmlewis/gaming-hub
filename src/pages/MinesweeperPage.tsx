@@ -275,23 +275,6 @@ export default function MinesweeperPage() {
             </div>
             <span className="stat-label mobile-only">Time</span>
           </div>
-          {grid && (
-            <div className="stat" title="Cells revealed">
-              <span className="stat-label-text">Progress</span>
-              <div className="progress-bar">
-                <div
-                  className="progress-fill"
-                  style={{
-                    width: `${Math.round(
-                      (grid.flat().filter((c) => c.isRevealed).length /
-                        (config.rows * config.cols)) *
-                        100
-                    )}%`,
-                  }}
-                ></div>
-              </div>
-            </div>
-          )}
         </div>
 
         {(gameState === 'won' || gameState === 'lost') && (

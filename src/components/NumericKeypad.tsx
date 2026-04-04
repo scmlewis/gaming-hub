@@ -3,132 +3,89 @@ import React from 'react';
 type Props = {
   onPress: (key: number | 'clear' | 'backspace') => void;
   onClose?: () => void;
+  onAction?: (action: 'undo' | 'pencil' | 'hint' | 'clear') => void;
 };
 
-export default function NumericKeypad({ onPress, onClose }: Props) {
+const vibrate = (ms: number = 20) => {
+  if (navigator && 'vibrate' in navigator)
+    try {
+      (navigator as unknown as { vibrate: (ms: number) => void }).vibrate(ms);
+    } catch (e) {
+      void e;
+    }
+};
+
+export default function NumericKeypad({ onPress, onAction }: Props) {
   return (
-    <div className="mobile-keypad" role="toolbar" aria-label="Numeric keypad">
-      <div className="keypad-header">
+    <div className="mobile-keypad" role="toolbar" aria-label="Sudoku keypad">
+      {/* Numbers 1-9 in single horizontal row */}
+      <div className="keypad-numbers-row">
+        {Array.from({ length: 9 }, (_, i) => i + 1).map((n) => (
+          <button
+            type="button"
+            key={n}
+            className="keypad-number"
+            onClick={() => {
+              vibrate();
+              onPress(n);
+            }}
+            aria-label={`Number ${n}`}
+            title={`Enter ${n}`}
+          >
+            {n}
+          </button>
+        ))}
+      </div>
+
+      {/* Action buttons row */}
+      <div className="keypad-actions-row">
         <button
           type="button"
-          className="keypad-close"
-          onClick={() => onClose && onClose()}
-          aria-label="Close keypad"
-        >
-          ✕
-        </button>
-      </div>
-      <div className="keypad-row">
-        {[1, 2, 3].map((n) => (
-          <button
-            type="button"
-            key={n}
-            className="keypad-key"
-            onClick={() => {
-              if (navigator && 'vibrate' in navigator)
-                try {
-                  (navigator as unknown as { vibrate: (ms: number) => void }).vibrate(20);
-                } catch (e) {
-                  void e;
-                }
-              onPress(n);
-            }}
-            aria-label={`Number ${n}`}
-          >
-            {n}
-          </button>
-        ))}
-      </div>
-      <div className="keypad-row">
-        {[4, 5, 6].map((n) => (
-          <button
-            type="button"
-            key={n}
-            className="keypad-key"
-            onClick={() => {
-              if (navigator && 'vibrate' in navigator)
-                try {
-                  (navigator as unknown as { vibrate: (ms: number) => void }).vibrate(20);
-                } catch (e) {
-                  void e;
-                }
-              onPress(n);
-            }}
-            aria-label={`Number ${n}`}
-          >
-            {n}
-          </button>
-        ))}
-      </div>
-      <div className="keypad-row">
-        {[7, 8, 9].map((n) => (
-          <button
-            type="button"
-            key={n}
-            className="keypad-key"
-            onClick={() => {
-              if (navigator && 'vibrate' in navigator)
-                try {
-                  (navigator as unknown as { vibrate: (ms: number) => void }).vibrate(20);
-                } catch (e) {
-                  void e;
-                }
-              onPress(n);
-            }}
-            aria-label={`Number ${n}`}
-          >
-            {n}
-          </button>
-        ))}
-      </div>
-      <div className="keypad-row">
-        <button
-          type="button"
-          className="keypad-key"
+          className="keypad-action"
           onClick={() => {
-            if (navigator && 'vibrate' in navigator)
-              try {
-                (navigator as unknown as { vibrate: (ms: number) => void }).vibrate(20);
-              } catch (e) {
-                void e;
-              }
-            onPress('clear');
+            vibrate();
+            onAction?.('undo');
+          }}
+          aria-label="Undo"
+          title="Undo"
+        >
+          ↶
+        </button>
+        <button
+          type="button"
+          className="keypad-action"
+          onClick={() => {
+            vibrate();
+            onAction?.('pencil');
+          }}
+          aria-label="Pencil marks"
+          title="Pencil marks"
+        >
+          ✎
+        </button>
+        <button
+          type="button"
+          className="keypad-action"
+          onClick={() => {
+            vibrate();
+            onAction?.('hint');
+          }}
+          aria-label="Hint"
+          title="Hint"
+        >
+          💡
+        </button>
+        <button
+          type="button"
+          className="keypad-action"
+          onClick={() => {
+            vibrate();
+            onAction?.('clear');
           }}
           aria-label="Clear"
+          title="Clear"
         >
-          Clear
-        </button>
-        <button
-          type="button"
-          className="keypad-key"
-          onClick={() => {
-            if (navigator && 'vibrate' in navigator)
-              try {
-                (navigator as unknown as { vibrate: (ms: number) => void }).vibrate(20);
-              } catch (e) {
-                void e;
-              }
-            onPress(0);
-          }}
-          aria-label="Zero"
-        >
-          0
-        </button>
-        <button
-          type="button"
-          className="keypad-key"
-          onClick={() => {
-            if (navigator && 'vibrate' in navigator)
-              try {
-                (navigator as unknown as { vibrate: (ms: number) => void }).vibrate(20);
-              } catch (e) {
-                void e;
-              }
-            onPress('backspace');
-          }}
-          aria-label="Backspace"
-        >
-          ⌫
+          ✕
         </button>
       </div>
     </div>
