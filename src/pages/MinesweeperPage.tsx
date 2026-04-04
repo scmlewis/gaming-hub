@@ -286,51 +286,7 @@ export default function MinesweeperPage() {
           </div>
         )}
 
-        {gameState === 'waiting' && (
-          <div
-            className="game-message waiting"
-            style={{
-              textAlign: 'center',
-              padding: '30px 20px',
-              borderRadius: '8px',
-              background: 'rgba(100, 120, 180, 0.1)',
-            }}
-          >
-            <p style={{ fontSize: '1.1rem', marginBottom: '12px', fontWeight: 500 }}>
-              Ready to play?
-            </p>
-            <p style={{ fontSize: '0.95rem', marginBottom: '18px', opacity: 0.85 }}>
-              Click any cell to start the timer and begin revealing
-            </p>
-            <div style={{ fontSize: '0.85rem', opacity: 0.7, lineHeight: 1.6 }}>
-              <div className="desktop-only">
-                💡 Left-click to reveal • Right-click/Long-press to flag
-              </div>
-              <div className="mobile-only">
-                💡 Tap to reveal • Long-press to flag • Use Flag Mode for faster marking
-              </div>
-            </div>
-          </div>
-        )}
 
-        {gameState === 'waiting' && (
-          <div className="game-message waiting">
-            <div style={{ textAlign: 'center', padding: '20px' }}>
-              <p style={{ fontSize: '1.1rem', marginBottom: '10px', opacity: 0.9 }}>
-                <strong>Ready to play?</strong>
-              </p>
-              <p style={{ fontSize: '0.95rem', marginBottom: '16px', opacity: 0.7 }}>
-                Click any cell to start the game
-              </p>
-              <p style={{ fontSize: '0.85rem', color: '#8b8e99' }}>
-                <span className="desktop-only">
-                  💡 Left-click to reveal • Right-click to flag • Middle-click for chord reveal
-                </span>
-                <span className="mobile-only">💡 Tap to reveal • Long-press to flag</span>
-              </p>
-            </div>
-          </div>
-        )}
 
         <div className="minesweeper-grid-wrap">
           <div className="minesweeper-hint mobile-only">Drag to pan for large boards</div>
