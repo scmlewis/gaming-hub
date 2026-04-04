@@ -1488,72 +1488,69 @@ select option {
    MOBILE / TOUCH ADJUSTMENTS
    ===================================================== */
 
-/* When mobile keypad is open, prevent layout jumps by adding bottom padding */
-.mobile-keypad-open body {
-  padding-bottom: 220px; /* matches keypad height below */
-}
-
-/* Mobile keypad UI */
-.mobile-keypad {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: env(safe-area-inset-bottom, 0);
-  height: calc(220px + env(safe-area-inset-bottom, 0));
+/* Sudoku Mobile Keypad - Inline Layout */
+.sudoku-mobile-keypad {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 12px 14px;
-  background: linear-gradient(180deg, var(--bg-elevated), var(--bg-secondary));
-  border-top: 1px solid var(--border-subtle);
-  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.6);
-  z-index: 9999;
+  gap: 12px;
+  padding: 16px 0;
+  background: transparent;
   touch-action: manipulation;
 }
 
-.mobile-keypad .keypad-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.sudoku-keypad-numbers {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 6px;
 }
 
-.mobile-keypad .keypad-close {
-  background: var(--glass-bg);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-primary);
-  font-size: 18px;
-  padding: 8px 12px;
+.sudoku-keypad-number {
+  min-height: 44px;
+  padding: 8px;
   border-radius: 10px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
-}
-
-.mobile-keypad .keypad-row {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  align-items: center;
-}
-
-.mobile-keypad .keypad-key {
-  flex: 1 1 0;
-  min-width: 56px;
-  min-height: 56px;
-  padding: 10px;
-  border-radius: 12px;
   background: var(--glass-bg);
   border: 1px solid var(--border-subtle);
   color: var(--text-primary);
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   touch-action: manipulation;
+  transition: all 0.12s ease;
 }
 
-.mobile-keypad .keypad-key:active {
+.sudoku-keypad-number:active {
   transform: translateY(-2px);
+  background: var(--game-accent-light, #e0e7ff);
+}
+
+.sudoku-keypad-actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.sudoku-keypad-action {
+  min-height: 44px;
+  padding: 8px;
+  border-radius: 10px;
+  background: var(--glass-bg);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: all 0.12s ease;
+}
+
+.sudoku-keypad-action:active {
+  transform: translateY(-2px);
+  background: var(--game-accent-light, #e0e7ff);
 }
 
 /* Larger cell and reduced hover/shine on touch devices */

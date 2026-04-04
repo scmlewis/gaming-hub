@@ -953,8 +953,8 @@ export default function Board({
         )}
       </div>
 
-      {/* Mobile numeric keypad (only on small screens and when a cell is selected) */}
-      {isMobileView && selected && (
+      {/* Mobile numeric keypad (always visible on small screens below the board) */}
+      {isMobileView && (
         <NumericKeypad
           onPress={(k) => {
             if (k === 'clear' || k === 'backspace') handleClearAction(k);
@@ -963,7 +963,12 @@ export default function Board({
               else handleNumberInput(k);
             }
           }}
-          onClose={() => setSelected(null)}
+          onAction={(action) => {
+            if (action === 'undo') undo();
+            else if (action === 'pencil') setPencilMode((v) => !v);
+            else if (action === 'hint') giveHint();
+            else if (action === 'clear') handleClearAction('clear');
+          }}
         />
       )}
 
