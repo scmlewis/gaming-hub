@@ -2,7 +2,6 @@ import React from 'react';
 
 type Props = {
   onPress: (key: number | 'clear' | 'backspace') => void;
-  onAction?: (action: 'undo' | 'pencil' | 'hint' | 'clear') => void;
 };
 
 const vibrate = (ms: number = 20) => {
@@ -14,7 +13,7 @@ const vibrate = (ms: number = 20) => {
     }
 };
 
-export default function NumericKeypad({ onPress, onAction }: Props) {
+export default function NumericKeypad({ onPress }: Props) {
   return (
     <div className="sudoku-mobile-keypad">
       <div className="sudoku-keypad-numbers">
@@ -28,12 +27,6 @@ export default function NumericKeypad({ onPress, onAction }: Props) {
             {n}
           </button>
         ))}
-      </div>
-      <div className="sudoku-keypad-actions">
-        <button className="sudoku-keypad-action" onClick={() => { vibrate(); onAction?.('undo'); }} title="Undo">↶</button>
-        <button className="sudoku-keypad-action" onClick={() => { vibrate(); onAction?.('pencil'); }} title="Pencil">✎</button>
-        <button className="sudoku-keypad-action" onClick={() => { vibrate(); onAction?.('hint'); }} title="Hint">💡</button>
-        <button className="sudoku-keypad-action" onClick={() => { vibrate(); onAction?.('clear'); }} title="Clear">✕</button>
       </div>
     </div>
   );

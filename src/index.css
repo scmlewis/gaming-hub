@@ -1492,8 +1492,8 @@ select option {
 .sudoku-mobile-keypad {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px 0;
+  gap: 8px;
+  padding: 8px 0;
   background: transparent;
   touch-action: manipulation;
 }
@@ -1522,33 +1522,6 @@ select option {
 }
 
 .sudoku-keypad-number:active {
-  transform: translateY(-2px);
-  background: var(--game-accent-light, #e0e7ff);
-}
-
-.sudoku-keypad-actions {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-}
-
-.sudoku-keypad-action {
-  min-height: 44px;
-  padding: 8px;
-  border-radius: 10px;
-  background: var(--glass-bg);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-primary);
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  touch-action: manipulation;
-  transition: all 0.12s ease;
-}
-
-.sudoku-keypad-action:active {
   transform: translateY(-2px);
   background: var(--game-accent-light, #e0e7ff);
 }

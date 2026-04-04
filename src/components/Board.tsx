@@ -963,12 +963,6 @@ export default function Board({
               else handleNumberInput(k);
             }
           }}
-          onAction={(action) => {
-            if (action === 'undo') undo();
-            else if (action === 'pencil') setPencilMode((v) => !v);
-            else if (action === 'hint') giveHint();
-            else if (action === 'clear') handleClearAction('clear');
-          }}
         />
       )}
 
