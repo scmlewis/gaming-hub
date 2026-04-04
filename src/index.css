@@ -2203,7 +2203,7 @@ html[data-dev-mode='true'] .modal {
   }
 
   .board-left {
-    flex: 0 1 auto;
+    flex: 0 0 auto;
   }
 
   .sudoku-side {
