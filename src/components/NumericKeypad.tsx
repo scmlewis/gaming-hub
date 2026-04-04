@@ -23,7 +23,7 @@ export default function NumericKeypad({ onPress, onAction }: Props) {
             key={n}
             className="sudoku-keypad-number"
             onClick={() => { vibrate(); onPress(n); }}
-            title={Enter }
+            title={`Enter ${n}`}
           >
             {n}
           </button>
