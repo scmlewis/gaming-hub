@@ -289,46 +289,10 @@ export default function Board({
     };
   }, []);
 
-  // toggle a document-level class when mobile keypad is visible to avoid global layout shifts
-  useEffect(() => {
-    const cls = 'mobile-keypad-open';
-    const el = document.documentElement;
-    const should = isMobileView && !!selected;
-    if (should) el.classList.add(cls);
-    else el.classList.remove(cls);
-    return () => {
-      el.classList.remove(cls);
-    };
-  }, [isMobileView, selected]);
-
   // Close mobile actions panel when leaving mobile view
   useEffect(() => {
     if (!isMobileView) setShowMobileActions(false);
   }, [isMobileView]);
-
-  // Ensure selected cell is visible when keypad opens on mobile
-  useEffect(() => {
-    if (!isMobileView || !selected) return;
-    // run after layout
-    const id = setTimeout(() => {
-      const sel = document.querySelector('.cell.cell-selected') as HTMLElement | null;
-      if (!sel) return;
-      const keypad = document.querySelector('.mobile-keypad') as HTMLElement | null;
-      const keypadH = keypad ? Math.round(keypad.getBoundingClientRect().height) : 160;
-      const rect = sel.getBoundingClientRect();
-      const viewportBottom = window.innerHeight - keypadH;
-      // if selected cell is covered by keypad, scroll by the overlap amount
-      if (rect.bottom > viewportBottom) {
-        const overlap = rect.bottom - viewportBottom + 12;
-        window.scrollBy({ top: overlap, behavior: 'smooth' });
-      } else if (rect.top < 0) {
-        // if above viewport, scroll it into view
-        const delta = rect.top - 12;
-        window.scrollBy({ top: delta, behavior: 'smooth' });
-      }
-    }, 120);
-    return () => clearTimeout(id);
-  }, [isMobileView, selected]);
 
   function handleNumberInput(num: number) {
     if (!selected) return;

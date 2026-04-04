@@ -1566,9 +1566,6 @@ select option {
   .mobile-keypad {
     height: 260px;
   }
-  .mobile-keypad-open body {
-    padding-bottom: 260px;
-  }
   .mobile-keypad .keypad-key {
     min-height: 64px;
     font-size: 20px;
@@ -2327,11 +2324,6 @@ html[data-dev-mode='true'] .modal {
     font-size: 18px;
     font-weight: 700;
     color: var(--text-primary);
-  }
-
-  /* Make sure board content isn't hidden behind keypad when keypad is open */
-  .mobile-keypad-open .board-card {
-    padding-bottom: calc(160px + env(safe-area-inset-bottom, 0));
   }
 
   .board-info {
