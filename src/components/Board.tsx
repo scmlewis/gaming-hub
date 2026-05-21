@@ -3,6 +3,7 @@ import Cell from './Cell';
 import DevPanel, { DevButton, DevInfo, DevSection } from './DevPanel';
 import NumericKeypad from './NumericKeypad';
 import { generateSudoku, solveSudoku, isValidMove, Grid } from '../utils/sudoku';
+import { MAX_HISTORY_SIZE } from '../constants';
 
 type Props = {
   difficulty?: 'easy' | 'medium' | 'hard';
@@ -59,7 +60,9 @@ export default function Board({
   const [showMobileActions, setShowMobileActions] = useState(false);
 
   function pushHistory(prevPuzzle: Grid, prevNotes: Record<string, number[]>) {
-    setUndoStack((s) => [...s, { puzzle: clone(prevPuzzle), notes: { ...prevNotes } }]);
+    setUndoStack((s) =>
+      [...s, { puzzle: clone(prevPuzzle), notes: { ...prevNotes } }].slice(-MAX_HISTORY_SIZE)
+    );
     setRedoStack([]);
   }
 
@@ -94,7 +97,7 @@ export default function Board({
     const result = generateSudoku(difficulty, size, seed);
     setInitialPuzzle(result.puzzle);
     setPuzzle(clone(result.puzzle));
-    setSolution(solveSudoku(result.puzzle));
+    setSolution(result.solution);
     setNotes({});
     setSelected(null);
     setInvalidCells({});
@@ -127,7 +130,7 @@ export default function Board({
       // show in-app modal instead of alert
       setTimeout(() => setShowCompletedModal(true), 20);
     }
-  }, [puzzle, solution, completed, elapsedSeconds]);
+  }, [puzzle, solution, completed]);
 
   const fixed = useMemo(() => initialPuzzle.map((r) => r.map((v) => v !== null)), [initialPuzzle]);
 

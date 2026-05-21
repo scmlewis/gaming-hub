@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import GameLayout from '../components/GameLayout';
 import Icon from '../components/icons';
 import Dropdown from '../components/Dropdown';
@@ -38,6 +38,135 @@ function formatTime(seconds: number): string {
     .padStart(2, '0')}`;
 }
 
+function createEmptyDisplay(rows: number, cols: number): MineGrid {
+  return Array.from({ length: rows }, () =>
+    Array.from({ length: cols }, () => ({
+      isMine: false,
+      isRevealed: false,
+      isFlagged: false,
+      adjacentMines: 0,
+    }))
+  );
+}
+
+type MinesweeperGridProps = {
+  grid: MineGrid;
+  rows: number;
+  cols: number;
+  showMines: boolean;
+  gameState: 'waiting' | 'playing' | 'won' | 'lost';
+  onCellClick: (row: number, col: number, isMiddleClick?: boolean) => void;
+  onToggleFlag: (row: number, col: number) => void;
+};
+
+const MinesweeperGrid = React.memo(function MinesweeperGrid({
+  grid,
+  rows,
+  cols,
+  showMines,
+  gameState,
+  onCellClick,
+  onToggleFlag,
+}: MinesweeperGridProps) {
+  return (
+    <div className="minesweeper-grid-wrap">
+      <div className="minesweeper-hint mobile-only">Drag to pan for large boards</div>
+      <div
+        className="minesweeper-grid"
+        onContextMenu={(e) => e.preventDefault()} /* prevent browser context menu inside grid */
+        style={
+          {
+            gridTemplateColumns: `repeat(${cols}, var(--mine-cell-size))`,
+            gridTemplateRows: `repeat(${rows}, var(--mine-cell-size))`,
+            '--grid-cols': cols,
+          } as React.CSSProperties
+        }
+      >
+        {grid.map((row, r) =>
+          row.map((cell, c) => {
+            let pointerTimer: number | null = null;
+
+            const onAux = (e: React.MouseEvent) => {
+              // handle middle/right clicks consistently
+              // prevent default context menu
+              e.preventDefault();
+              if (e.button === 1) {
+                onCellClick(r, c, true);
+              } else if (e.button === 2) {
+                onToggleFlag(r, c);
+              }
+            };
+
+            const onPointerDown = (e: React.PointerEvent) => {
+              // For touch, start long-press timer to toggle flag
+              if (e.pointerType === 'touch') {
+                // prevent default to avoid browser context menu on long-press
+                e.preventDefault();
+                pointerTimer = window.setTimeout(() => {
+                  if (gameState === 'playing' && !grid[r][c].isRevealed) onToggleFlag(r, c);
+                  pointerTimer = null;
+                }, 500);
+              }
+            };
+
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const onPointerUp = (_e: React.PointerEvent) => {
+              if (pointerTimer) {
+                clearTimeout(pointerTimer as number);
+                pointerTimer = null;
+                // treat as a normal tap/click
+                onCellClick(r, c);
+              }
+            };
+
+            const onPointerMove = () => {
+              if (pointerTimer) {
+                clearTimeout(pointerTimer as number);
+                pointerTimer = null;
+              }
+            };
+
+            return (
+              <button
+                key={`${r}-${c}`}
+                className={`mine-cell ${cell.isRevealed ? 'revealed' : ''} ${
+                  cell.isFlagged ? 'flagged' : ''
+                } ${cell.isMine && cell.isRevealed ? 'mine' : ''} ${
+                  showMines && cell.isMine && !cell.isRevealed ? 'dev-show-mine' : ''
+                }`}
+                onClick={() => onCellClick(r, c)}
+                onAuxClick={onAux}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  onToggleFlag(r, c);
+                }}
+                onPointerDown={onPointerDown}
+                onPointerUp={onPointerUp}
+                onPointerMove={onPointerMove}
+                disabled={gameState === 'won' || gameState === 'lost'}
+              >
+                {cell.isRevealed ? (
+                  cell.isMine ? (
+                    '💣'
+                  ) : cell.adjacentMines > 0 ? (
+                    <span className={NUMBER_CLASSES[cell.adjacentMines]}>{cell.adjacentMines}</span>
+                  ) : (
+                    ''
+                  )
+                ) : cell.isFlagged ? (
+                  <span className="flag-icon">⚑</span>
+                ) : (
+                  ''
+                )}
+              </button>
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
+});
+
 export default function MinesweeperPage() {
   const [difficulty, setDifficulty] = useState<Difficulty | 'custom'>('easy');
   const [customConfig, setCustomConfig] = useState(() => {
@@ -51,11 +180,11 @@ export default function MinesweeperPage() {
   const [showMines, setShowMines] = useState(false);
   const [flagMode, setFlagMode] = useState(false);
 
-  const triggerHaptic = (ms: number) => {
+  const triggerHaptic = useCallback((ms: number) => {
     if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
       navigator.vibrate(ms);
     }
-  };
+  }, []);
 
   const config = difficulty === 'custom' ? customConfig : DIFFICULTIES[difficulty];
 
@@ -83,35 +212,51 @@ export default function MinesweeperPage() {
     return () => clearInterval(id);
   }, [timerRunning]);
 
-  function handleCellClick(row: number, col: number, isMiddleClick = false) {
-    if (gameState === 'won' || gameState === 'lost') return;
+  const handleCellClick = useCallback(
+    (row: number, col: number, isMiddleClick = false) => {
+      if (gameState === 'won' || gameState === 'lost') return;
 
-    let currentGrid = grid;
-    if (!currentGrid) {
-      // First click - generate grid avoiding this cell
-      currentGrid = createGrid(config.rows, config.cols, config.mines, [row, col]);
-      setGameState('playing');
-      setTimerRunning(true);
-    }
+      let currentGrid = grid;
+      if (!currentGrid) {
+        // First click - generate grid avoiding this cell
+        currentGrid = createGrid(config.rows, config.cols, config.mines, [row, col]);
+        setGameState('playing');
+        setTimerRunning(true);
+      }
 
-    if (
-      flagMode &&
-      gameState === 'playing' &&
-      currentGrid &&
-      !currentGrid[row][col].isRevealed &&
-      !isMiddleClick
-    ) {
-      setGrid(toggleFlag(currentGrid, row, col));
-      triggerHaptic(10);
-      return;
-    }
+      if (
+        flagMode &&
+        gameState === 'playing' &&
+        currentGrid &&
+        !currentGrid[row][col].isRevealed &&
+        !isMiddleClick
+      ) {
+        setGrid(toggleFlag(currentGrid, row, col));
+        triggerHaptic(10);
+        return;
+      }
 
-    if (currentGrid[row][col].isFlagged && !isMiddleClick) return;
+      if (currentGrid[row][col].isFlagged && !isMiddleClick) return;
 
-    // Chord clicking: middle-click or click on revealed cell with satisfied numbers
-    if (isMiddleClick && currentGrid[row][col].isRevealed) {
-      const newGrid = chordReveal(currentGrid, row, col);
+      // Chord clicking: middle-click or click on revealed cell with satisfied numbers
+      if (isMiddleClick && currentGrid[row][col].isRevealed) {
+        const newGrid = chordReveal(currentGrid, row, col);
+        setGrid(newGrid);
+
+        if (checkLose(newGrid)) {
+          setGrid(revealAllMines(newGrid));
+          setGameState('lost');
+          setTimerRunning(false);
+        } else if (checkWin(newGrid)) {
+          setGameState('won');
+          setTimerRunning(false);
+        }
+        return;
+      }
+
+      const newGrid = revealCell(currentGrid, row, col);
       setGrid(newGrid);
+      triggerHaptic(8);
 
       if (checkLose(newGrid)) {
         setGrid(revealAllMines(newGrid));
@@ -121,22 +266,9 @@ export default function MinesweeperPage() {
         setGameState('won');
         setTimerRunning(false);
       }
-      return;
-    }
-
-    const newGrid = revealCell(currentGrid, row, col);
-    setGrid(newGrid);
-    triggerHaptic(8);
-
-    if (checkLose(newGrid)) {
-      setGrid(revealAllMines(newGrid));
-      setGameState('lost');
-      setTimerRunning(false);
-    } else if (checkWin(newGrid)) {
-      setGameState('won');
-      setTimerRunning(false);
-    }
-  }
+    },
+    [config.cols, config.mines, config.rows, flagMode, gameState, grid, triggerHaptic]
+  );
 
   function handleCustomConfigChange(field: 'rows' | 'cols' | 'mines', value: string) {
     const num = parseInt(value) || 0;
@@ -161,30 +293,26 @@ export default function MinesweeperPage() {
   // Prevent duplicate toggles from multiple event types firing in quick succession
   const lastToggleRef = React.useRef<Map<string, number>>(new Map());
 
-  function toggleFlagSafe(row: number, col: number) {
-    const key = `${row}-${col}`;
-    const now = Date.now();
-    const prev = lastToggleRef.current.get(key) || 0;
-    if (now - prev < 250) return;
-    lastToggleRef.current.set(key, now);
-    if (!grid) return;
-    if (grid[row][col].isRevealed) return;
-    setGrid(toggleFlag(grid, row, col));
-    triggerHaptic(10);
-  }
+  const toggleFlagSafe = useCallback(
+    (row: number, col: number) => {
+      const key = `${row}-${col}`;
+      const now = Date.now();
+      const prev = lastToggleRef.current.get(key) || 0;
+      if (now - prev < 250) return;
+      lastToggleRef.current.set(key, now);
+      if (!grid) return;
+      if (grid[row][col].isRevealed) return;
+      setGrid(toggleFlag(grid, row, col));
+      triggerHaptic(10);
+    },
+    [grid, triggerHaptic]
+  );
 
-  const displayGrid = grid || createEmptyDisplay(config.rows, config.cols);
-
-  function createEmptyDisplay(rows: number, cols: number) {
-    return Array.from({ length: rows }, () =>
-      Array.from({ length: cols }, () => ({
-        isMine: false,
-        isRevealed: false,
-        isFlagged: false,
-        adjacentMines: 0,
-      }))
-    );
-  }
+  const emptyDisplay = useMemo(
+    () => createEmptyDisplay(config.rows, config.cols),
+    [config.rows, config.cols]
+  );
+  const displayGrid = grid || emptyDisplay;
 
   return (
     <GameLayout title="Minesweeper" color="#f43f5e" icon={<Icon name="minesweeper" />}>
@@ -286,106 +414,15 @@ export default function MinesweeperPage() {
           </div>
         )}
 
-
-
-        <div className="minesweeper-grid-wrap">
-          <div className="minesweeper-hint mobile-only">Drag to pan for large boards</div>
-          <div
-            className="minesweeper-grid"
-            onContextMenu={(e) => e.preventDefault()} /* prevent browser context menu inside grid */
-            style={
-              {
-                gridTemplateColumns: `repeat(${config.cols}, var(--mine-cell-size))`,
-                gridTemplateRows: `repeat(${config.rows}, var(--mine-cell-size))`,
-                '--grid-cols': config.cols,
-              } as React.CSSProperties
-            }
-          >
-            {displayGrid.map((row, r) =>
-              row.map((cell, c) => {
-                let pointerTimer: number | null = null;
-
-                const onAux = (e: React.MouseEvent) => {
-                  // handle middle/right clicks consistently
-                  // prevent default context menu
-                  e.preventDefault();
-                  if (e.button === 1) {
-                    handleCellClick(r, c, true);
-                  } else if (e.button === 2) {
-                    toggleFlagSafe(r, c);
-                  }
-                };
-
-                const onPointerDown = (e: React.PointerEvent) => {
-                  // For touch, start long-press timer to toggle flag
-                  if (e.pointerType === 'touch') {
-                    // prevent default to avoid browser context menu on long-press
-                    e.preventDefault();
-                    pointerTimer = window.setTimeout(() => {
-                      if (gameState === 'playing' && grid && !grid[r][c].isRevealed)
-                        setGrid(toggleFlag(grid, r, c));
-                      pointerTimer = null;
-                    }, 500);
-                  }
-                };
-
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const onPointerUp = (_e: React.PointerEvent) => {
-                  if (pointerTimer) {
-                    clearTimeout(pointerTimer as number);
-                    pointerTimer = null;
-                    // treat as a normal tap/click
-                    handleCellClick(r, c);
-                  }
-                };
-
-                const onPointerMove = () => {
-                  if (pointerTimer) {
-                    clearTimeout(pointerTimer as number);
-                    pointerTimer = null;
-                  }
-                };
-
-                return (
-                  <button
-                    key={`${r}-${c}`}
-                    className={`mine-cell ${cell.isRevealed ? 'revealed' : ''} ${
-                      cell.isFlagged ? 'flagged' : ''
-                    } ${cell.isMine && cell.isRevealed ? 'mine' : ''} ${
-                      showMines && cell.isMine && !cell.isRevealed ? 'dev-show-mine' : ''
-                    }`}
-                    onClick={() => handleCellClick(r, c)}
-                    onAuxClick={onAux}
-                    onContextMenu={(e) => {
-                      e.preventDefault();
-                      toggleFlagSafe(r, c);
-                    }}
-                    onPointerDown={onPointerDown}
-                    onPointerUp={onPointerUp}
-                    onPointerMove={onPointerMove}
-                    disabled={gameState === 'won' || gameState === 'lost'}
-                  >
-                    {cell.isRevealed ? (
-                      cell.isMine ? (
-                        '💣'
-                      ) : cell.adjacentMines > 0 ? (
-                        <span className={NUMBER_CLASSES[cell.adjacentMines]}>
-                          {cell.adjacentMines}
-                        </span>
-                      ) : (
-                        ''
-                      )
-                    ) : cell.isFlagged ? (
-                      <span className="flag-icon">⚑</span>
-                    ) : (
-                      ''
-                    )}
-                  </button>
-                );
-              })
-            )}
-          </div>
-        </div>
+        <MinesweeperGrid
+          grid={displayGrid}
+          rows={config.rows}
+          cols={config.cols}
+          showMines={showMines}
+          gameState={gameState}
+          onCellClick={handleCellClick}
+          onToggleFlag={toggleFlagSafe}
+        />
       </div>
 
       <div className="game-instructions">

@@ -1,138 +1,145 @@
 // Minesweeper game utilities
 
 export type CellState = {
-  isMine: boolean
-  isRevealed: boolean
-  isFlagged: boolean
-  adjacentMines: number
-}
+  isMine: boolean;
+  isRevealed: boolean;
+  isFlagged: boolean;
+  adjacentMines: number;
+};
 
-export type MineGrid = CellState[][]
+export type MineGrid = CellState[][];
 
-export type Difficulty = 'easy' | 'medium' | 'hard'
+export type Difficulty = 'easy' | 'medium' | 'hard';
 
 export const DIFFICULTIES: Record<Difficulty, { rows: number; cols: number; mines: number }> = {
   easy: { rows: 9, cols: 9, mines: 10 },
   medium: { rows: 16, cols: 16, mines: 40 },
-  hard: { rows: 16, cols: 30, mines: 99 }
-}
+  hard: { rows: 16, cols: 30, mines: 99 },
+};
 
-export function createGrid(rows: number, cols: number, mines: number, firstClick?: [number, number]): MineGrid {
+export function createGrid(
+  rows: number,
+  cols: number,
+  mines: number,
+  firstClick?: [number, number]
+): MineGrid {
   const grid: MineGrid = Array.from({ length: rows }, () =>
     Array.from({ length: cols }, () => ({
       isMine: false,
       isRevealed: false,
       isFlagged: false,
-      adjacentMines: 0
+      adjacentMines: 0,
     }))
-  )
+  );
 
   // Place mines randomly, avoiding firstClick cell and its neighbors
-  const avoid = new Set<string>()
+  const avoid = new Set<string>();
   if (firstClick) {
-    const [fr, fc] = firstClick
+    const [fr, fc] = firstClick;
     for (let dr = -1; dr <= 1; dr++) {
       for (let dc = -1; dc <= 1; dc++) {
-        avoid.add(`${fr + dr}-${fc + dc}`)
+        avoid.add(`${fr + dr}-${fc + dc}`);
       }
     }
   }
 
-  let placed = 0
+  let placed = 0;
   while (placed < mines) {
-    const r = Math.floor(Math.random() * rows)
-    const c = Math.floor(Math.random() * cols)
+    const r = Math.floor(Math.random() * rows);
+    const c = Math.floor(Math.random() * cols);
     if (!grid[r][c].isMine && !avoid.has(`${r}-${c}`)) {
-      grid[r][c].isMine = true
-      placed++
+      grid[r][c].isMine = true;
+      placed++;
     }
   }
 
   // Calculate adjacent mines
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
-      if (grid[r][c].isMine) continue
-      let count = 0
+      if (grid[r][c].isMine) continue;
+      let count = 0;
       for (let dr = -1; dr <= 1; dr++) {
         for (let dc = -1; dc <= 1; dc++) {
-          const nr = r + dr
-          const nc = c + dc
+          const nr = r + dr;
+          const nc = c + dc;
           if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && grid[nr][nc].isMine) {
-            count++
+            count++;
           }
         }
       }
-      grid[r][c].adjacentMines = count
+      grid[r][c].adjacentMines = count;
     }
   }
 
-  return grid
+  return grid;
 }
 
 export function revealCell(grid: MineGrid, row: number, col: number): MineGrid {
-  const rows = grid.length
-  const cols = grid[0].length
-  const newGrid = grid.map(r => r.map(c => ({ ...c })))
+  const rows = grid.length;
+  const cols = grid[0].length;
+  const newGrid = grid.map((r) => r.map((c) => ({ ...c })));
 
   function flood(r: number, c: number) {
-    if (r < 0 || r >= rows || c < 0 || c >= cols) return
-    if (newGrid[r][c].isRevealed || newGrid[r][c].isFlagged) return
-    
-    newGrid[r][c].isRevealed = true
-    
+    if (r < 0 || r >= rows || c < 0 || c >= cols) return;
+    if (newGrid[r][c].isRevealed || newGrid[r][c].isFlagged) return;
+
+    newGrid[r][c].isRevealed = true;
+
     if (newGrid[r][c].adjacentMines === 0 && !newGrid[r][c].isMine) {
       for (let dr = -1; dr <= 1; dr++) {
         for (let dc = -1; dc <= 1; dc++) {
-          if (dr !== 0 || dc !== 0) flood(r + dr, c + dc)
+          if (dr !== 0 || dc !== 0) flood(r + dr, c + dc);
         }
       }
     }
   }
 
-  flood(row, col)
-  return newGrid
+  flood(row, col);
+  return newGrid;
 }
 
 export function toggleFlag(grid: MineGrid, row: number, col: number): MineGrid {
-  if (grid[row][col].isRevealed) return grid
-  const newGrid = grid.map(r => r.map(c => ({ ...c })))
-  newGrid[row][col].isFlagged = !newGrid[row][col].isFlagged
-  return newGrid
+  if (grid[row][col].isRevealed) return grid;
+  const newGrid = grid.map((r) => r.map((c) => ({ ...c })));
+  newGrid[row][col].isFlagged = !newGrid[row][col].isFlagged;
+  return newGrid;
 }
 
 export function checkWin(grid: MineGrid): boolean {
   for (const row of grid) {
     for (const cell of row) {
-      if (!cell.isMine && !cell.isRevealed) return false
+      if (!cell.isMine && !cell.isRevealed) return false;
     }
   }
-  return true
+  return true;
 }
 
 export function checkLose(grid: MineGrid): boolean {
   for (const row of grid) {
     for (const cell of row) {
-      if (cell.isMine && cell.isRevealed) return true
+      if (cell.isMine && cell.isRevealed) return true;
     }
   }
-  return false
+  return false;
 }
 
 export function revealAllMines(grid: MineGrid): MineGrid {
-  return grid.map(r => r.map(c => ({
-    ...c,
-    isRevealed: c.isMine ? true : c.isRevealed
-  })))
+  return grid.map((r) =>
+    r.map((c) => ({
+      ...c,
+      isRevealed: c.isMine ? true : c.isRevealed,
+    }))
+  );
 }
 
 export function countFlags(grid: MineGrid): number {
-  let count = 0
+  let count = 0;
   for (const row of grid) {
     for (const cell of row) {
-      if (cell.isFlagged) count++
+      if (cell.isFlagged) count++;
     }
   }
-  return count
+  return count;
 }
 
 /**
@@ -140,29 +147,29 @@ export function countFlags(grid: MineGrid): number {
  * matches the adjacent mine count. Only works on revealed cells with numbers.
  */
 export function chordReveal(grid: MineGrid, row: number, col: number): MineGrid {
-  const rows = grid.length
-  const cols = grid[0].length
-  const cell = grid[row][col]
+  const rows = grid.length;
+  const cols = grid[0].length;
+  const cell = grid[row][col];
 
   // Can only chord on revealed cells with adjacent mines
   if (!cell.isRevealed || cell.isMine || cell.adjacentMines === 0) {
-    return grid
+    return grid;
   }
 
   // Count adjacent flags
-  let flagCount = 0
-  const neighborsToReveal: [number, number][] = []
+  let flagCount = 0;
+  const neighborsToReveal: [number, number][] = [];
 
   for (let dr = -1; dr <= 1; dr++) {
     for (let dc = -1; dc <= 1; dc++) {
-      if (dr === 0 && dc === 0) continue
-      const nr = row + dr
-      const nc = col + dc
+      if (dr === 0 && dc === 0) continue;
+      const nr = row + dr;
+      const nc = col + dc;
       if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
         if (grid[nr][nc].isFlagged) {
-          flagCount++
+          flagCount++;
         } else if (!grid[nr][nc].isRevealed) {
-          neighborsToReveal.push([nr, nc])
+          neighborsToReveal.push([nr, nc]);
         }
       }
     }
@@ -170,14 +177,32 @@ export function chordReveal(grid: MineGrid, row: number, col: number): MineGrid 
 
   // Only chord if flag count matches adjacent mine count
   if (flagCount !== cell.adjacentMines) {
-    return grid
+    return grid;
   }
 
-  // Reveal all non-flagged neighbors
-  let newGrid = grid
+  if (neighborsToReveal.length === 0) return grid;
+
+  // Reveal all non-flagged neighbors in a single pass
+  const newGrid = grid.map((r) => r.map((c) => ({ ...c })));
+
+  function flood(r: number, c: number) {
+    if (r < 0 || r >= rows || c < 0 || c >= cols) return;
+    if (newGrid[r][c].isRevealed || newGrid[r][c].isFlagged) return;
+
+    newGrid[r][c].isRevealed = true;
+
+    if (newGrid[r][c].adjacentMines === 0 && !newGrid[r][c].isMine) {
+      for (let dr = -1; dr <= 1; dr++) {
+        for (let dc = -1; dc <= 1; dc++) {
+          if (dr !== 0 || dc !== 0) flood(r + dr, c + dc);
+        }
+      }
+    }
+  }
+
   for (const [nr, nc] of neighborsToReveal) {
-    newGrid = revealCell(newGrid, nr, nc)
+    flood(nr, nc);
   }
 
-  return newGrid
+  return newGrid;
 }
