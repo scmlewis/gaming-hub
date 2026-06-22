@@ -143,7 +143,7 @@ export default function WordlePage() {
     }
   }
 
-  // Keyboard event listener - re-register on every render to get fresh state
+  // Keyboard event listener
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (gameState !== 'playing') return;
@@ -161,7 +161,7 @@ export default function WordlePage() {
     }
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }); // No dependencies - runs on every render
+  }, [gameState, submitGuess, currentGuess]);
 
   // Build display rows (filled guesses + current + empty)
   const displayRows: (GuessResult | string | null)[] = [];

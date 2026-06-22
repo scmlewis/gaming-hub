@@ -266,10 +266,14 @@ export default function Board({
             return next;
           });
         }
-      } else if (e.key === 'ArrowUp') setSelected(([rr, cc]) => [Math.max(0, rr - 1), cc]);
-      else if (e.key === 'ArrowDown') setSelected(([rr, cc]) => [Math.min(n - 1, rr + 1), cc]);
-      else if (e.key === 'ArrowLeft') setSelected(([rr, cc]) => [rr, Math.max(0, cc - 1)]);
-      else if (e.key === 'ArrowRight') setSelected(([rr, cc]) => [rr, Math.min(n - 1, cc + 1)]);
+      } else if (e.key === 'ArrowUp')
+        setSelected((prev) => (prev ? [Math.max(0, prev[0] - 1), prev[1]] : null));
+      else if (e.key === 'ArrowDown')
+        setSelected((prev) => (prev ? [Math.min(n - 1, prev[0] + 1), prev[1]] : null));
+      else if (e.key === 'ArrowLeft')
+        setSelected((prev) => (prev ? [prev[0], Math.max(0, prev[1] - 1)] : null));
+      else if (e.key === 'ArrowRight')
+        setSelected((prev) => (prev ? [prev[0], Math.min(n - 1, prev[1] + 1)] : null));
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -319,10 +323,7 @@ export default function Board({
     pushHistory(puzzle, notes);
     setPuzzle((prev) => {
       const next = prev.map((row) => row.slice());
-      const saved = next[r][c];
-      next[r][c] = null;
       const ok = isValidMove(next, r, c, num);
-      next[r][c] = saved;
       if (!ok) {
         setInvalidCells((curr) => ({ ...curr, [`${r}-${c}`]: true }));
         setTimeout(
@@ -410,11 +411,7 @@ export default function Board({
       for (let c = 0; c < n; c++) {
         const v = grid[r][c];
         if (!v) continue;
-        // Temporarily clear cell to test validity
-        const saved = grid[r][c];
-        grid[r][c] = null;
-        const ok = isValidMove(grid, r, c, saved as number);
-        grid[r][c] = saved;
+        const ok = isValidMove(grid, r, c, v);
         if (!ok) invalid[`${r}-${c}`] = true;
       }
     }
@@ -612,7 +609,7 @@ export default function Board({
         ↷
       </button>
       <button
-        onClick={() => handleClearAction('backspace')}
+        onClick={handleClearAction}
         className="sudoku-action-btn"
         aria-label="Clear cell"
         title="Clear selected cell"
@@ -844,7 +841,7 @@ export default function Board({
             ))}
             <button
               className="sudoku-numpad-btn wide"
-              onClick={() => handleClearAction('backspace')}
+              onClick={handleClearAction}
               aria-label="Clear"
             >
               Clear
@@ -924,11 +921,8 @@ export default function Board({
       {isMobileView && (
         <NumericKeypad
           onPress={(k) => {
-            if (k === 'clear' || k === 'backspace') handleClearAction(k);
-            else if (typeof k === 'number') {
-              if (k === 0) handleClearAction('clear');
-              else handleNumberInput(k);
-            }
+            if (k === 'clear' || k === 'backspace' || k === 0) handleClearAction();
+            else if (typeof k === 'number') handleNumberInput(k);
           }}
         />
       )}

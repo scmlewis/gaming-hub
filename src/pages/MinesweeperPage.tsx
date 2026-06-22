@@ -290,16 +290,8 @@ export default function MinesweeperPage() {
   const flagCount = grid ? countFlags(grid) : 0;
   const minesRemaining = config.mines - flagCount;
 
-  // Prevent duplicate toggles from multiple event types firing in quick succession
-  const lastToggleRef = React.useRef<Map<string, number>>(new Map());
-
   const toggleFlagSafe = useCallback(
     (row: number, col: number) => {
-      const key = `${row}-${col}`;
-      const now = Date.now();
-      const prev = lastToggleRef.current.get(key) || 0;
-      if (now - prev < 250) return;
-      lastToggleRef.current.set(key, now);
       if (!grid) return;
       if (grid[row][col].isRevealed) return;
       setGrid(toggleFlag(grid, row, col));

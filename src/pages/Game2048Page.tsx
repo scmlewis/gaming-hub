@@ -103,9 +103,8 @@ export default function Game2048Page() {
     (direction: 'up' | 'down' | 'left' | 'right') => {
       if (gameOver || (won && !keepPlaying) || isAnimating.current) return;
 
-      const { grid: newGrid, score: addedScore, moved } = move(grid, direction);
+      const { grid: newGrid, score: addedScore } = move(grid, direction);
 
-      if (!moved) return;
       triggerHaptic(8);
 
       // Clear hint when move is made
