@@ -1,0 +1,453 @@
+/* =====================================================
+   GAME CARD
+   ===================================================== */
+
+.game-card {
+  --card-accent: var(--accent);
+  position: relative;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  padding-right: 88px;
+  text-decoration: none;
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  touch-action: manipulation;
+}
+
+.game-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--card-accent), rgba(255, 255, 255, 0.02));
+  opacity: 1;
+  transition: opacity var(--transition-normal);
+}
+
+.game-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, var(--card-accent), transparent 70%);
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+  pointer-events: none;
+}
+
+.game-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: var(--shadow-lg), 0 0 60px rgba(122, 92, 255, 0.12);
+}
+
+.game-card:hover::before {
+  opacity: 1;
+}
+
+.game-card:hover::after {
+  opacity: 0.05;
+}
+
+.game-card-icon {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  color: var(--card-accent);
+  background: linear-gradient(135deg, var(--glass-bg), transparent);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.game-card-icon svg {
+  width: 36px;
+  height: 36px;
+}
+
+.game-card:hover .game-card-icon {
+  transform: scale(1.1) rotate(-5deg);
+}
+
+.game-card-content h3 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.game-card-content p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+.game-card-arrow {
+  position: absolute;
+  bottom: 32px;
+  right: 32px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: var(--text-tertiary);
+  background: var(--glass-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 50%;
+  transition: all var(--transition-normal);
+}
+
+.game-card-arrow svg {
+  width: 18px;
+  height: 18px;
+}
+
+.game-card:hover .game-card-arrow {
+  color: var(--card-accent);
+  border-color: var(--card-accent);
+  transform: translateX(4px);
+}
+
+/* =====================================================
+   GAME LAYOUT
+   ===================================================== */
+
+.game-layout {
+  --game-accent: var(--accent);
+  --max-board-width: calc(min(760px, 100vw) - 48px);
+  --ui-vertical-space: 200px;
+  --cols: 9;
+  --cell-size-w: clamp(32px, calc(var(--max-board-width) / var(--cols)), 64px);
+  --cell-size-h: clamp(32px, calc((100vh - var(--ui-vertical-space)) / var(--cols)), 64px);
+  --cell-size: min(var(--cell-size-h), var(--cell-size-w));
+
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(122, 92, 255, 0.1), transparent),
+    radial-gradient(circle at 85% 10%, rgba(68, 209, 141, 0.08), transparent 45%), var(--bg-primary);
+  padding: 24px;
+}
+
+.game-header {
+  max-width: 900px;
+  margin: 0 auto 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  backdrop-filter: blur(10px);
+}
+
+.back-button:hover {
+  color: var(--text-primary);
+  border-color: var(--border-light);
+  transform: translateX(-4px);
+}
+
+.back-icon {
+  font-size: 18px;
+}
+
+.game-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  flex: 1;
+}
+
+.timer-value,
+.stat-value,
+.sudoku-numpad-btn,
+.sudoku-action-btn,
+.btn-primary,
+.btn-secondary,
+.btn-icon,
+.dropdown-button,
+select,
+.cell,
+.mine-cell,
+.wordle-tile,
+.keyboard-key {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+}
+
+.game-title-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 10px;
+  color: var(--game-accent);
+}
+
+.game-title-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.header-spacer {
+  flex: 1;
+}
+
+.game-content {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* =====================================================
+   GAME TOOLBAR
+   ===================================================== */
+
+.game-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.toolbar-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* =====================================================
+   BUTTONS
+   ===================================================== */
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, var(--game-accent), var(--accent-dark));
+  border: none;
+  border-radius: var(--radius-md);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 8px 20px rgba(var(--game-accent-rgb, 122, 92, 255), 0.25);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(var(--game-accent-rgb, 122, 92, 255), 0.35);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: var(--glass-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--game-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(var(--game-accent-rgb, 99, 102, 241), 0.15);
+}
+
+.btn-secondary.selected {
+  background: rgba(var(--game-accent-rgb, 99, 102, 241), 0.15);
+  border-color: var(--game-accent);
+  box-shadow: 0 0 20px rgba(var(--game-accent-rgb, 99, 102, 241), 0.3);
+}
+
+.btn-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--glass-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  font-size: 18px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--text-primary);
+}
+
+.btn-icon:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--border-light);
+  transform: translateY(-2px);
+}
+
+.btn-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* =====================================================
+   FORM CONTROLS
+   ===================================================== */
+
+.game-select,
+select {
+  appearance: none;
+  padding: 10px 36px 10px 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+select:hover {
+  border-color: var(--border-light);
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--game-accent);
+  box-shadow: 0 0 0 3px rgba(var(--game-accent-rgb, 99, 102, 241), 0.25);
+}
+
+select option {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  padding: 8px;
+}
+
+/* Custom Dropdown */
+.dropdown {
+  display: inline-block;
+  position: relative;
+}
+
+.dropdown-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dropdown-button:hover {
+  border-color: var(--border-light);
+}
+
+.dropdown-caret {
+  opacity: 0.6;
+  transition: transform var(--transition-fast);
+}
+
+.dropdown[data-open='true'] .dropdown-caret {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 160px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 6px;
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  animation: dropdownFade 0.15s ease;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-option {
+  list-style: none;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dropdown-option:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.dropdown-option.selected {
+  background: var(--accent-glow);
+  color: var(--accent-light);
+  font-weight: 600;
+}

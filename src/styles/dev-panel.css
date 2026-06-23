@@ -1,0 +1,257 @@
+/* =====================================================
+   DEV PANEL
+   ===================================================== */
+
+.dev-panel {
+  position: fixed;
+  /* lift the panel above the FAB so they don't overlap */
+  bottom: 84px;
+  right: 20px;
+  background: linear-gradient(135deg, var(--bg-elevated), var(--bg-tertiary));
+  border: 2px solid var(--danger);
+  border-radius: var(--radius-lg);
+  min-width: 300px;
+  max-width: 380px;
+  box-shadow: 0 8px 32px rgba(244, 63, 94, 0.2);
+  z-index: 900;
+  font-size: 13px;
+}
+
+/* Floating dev-mode toggle (FAB) — positioned out of document flow to avoid layout shifts */
+.dev-mode-fab {
+  position: fixed;
+  /* primary placement: bottom-right near other action buttons */
+  bottom: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  z-index: 10001;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.dev-mode-fab.active {
+  background: linear-gradient(135deg, var(--danger), var(--accent));
+  color: #fff;
+  transform: scale(1.02);
+}
+
+/* On narrow viewports, move the FAB to the top-right to avoid covering content */
+@media (max-width: 640px) {
+  .dev-mode-fab {
+    top: 16px;
+    right: 16px;
+    bottom: auto;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+  }
+  .dev-panel {
+    bottom: 72px; /* keep a little gap from the FAB */
+    right: 12px;
+    left: 12px;
+    max-width: calc(100% - 24px);
+  }
+}
+
+/* Ensure the fab doesn't cause layout when focus outlines appear */
+.dev-mode-fab:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.dev-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: linear-gradient(90deg, var(--danger), var(--accent));
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  cursor: pointer;
+  font-weight: 700;
+  color: white;
+}
+
+.dev-icon {
+  font-size: 18px;
+}
+
+.dev-toggle {
+  margin-left: auto;
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.dev-panel-content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.dev-section {
+  background: var(--glass-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.dev-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--danger);
+  margin-bottom: 10px;
+}
+
+.dev-info {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.dev-info:last-child {
+  border-bottom: none;
+}
+
+.dev-info-label {
+  color: var(--text-secondary);
+}
+
+.dev-info-value {
+  font-family: var(--font-mono, 'Consolas', monospace);
+  color: var(--success);
+  font-weight: 600;
+}
+
+.dev-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dev-btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dev-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
+
+.dev-btn-default {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+}
+
+.dev-btn-success {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+}
+
+.dev-btn-danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+.dev-btn-warning {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+}
+
+/* =====================================================
+   DEV LOGIN (PASSWORD PROMPT)
+   ===================================================== */
+
+.dev-password-overlay {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 30% 20%, rgba(122, 92, 255, 0.15), transparent 45%),
+    rgba(5, 7, 18, 0.82);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10002;
+  animation: fadeIn 0.2s ease;
+}
+
+.dev-password-modal {
+  width: min(420px, 92vw);
+  background: linear-gradient(145deg, rgba(31, 34, 56, 0.98), rgba(18, 20, 35, 0.98));
+  border: 1px solid rgba(122, 92, 255, 0.35);
+  border-radius: var(--radius-xl);
+  padding: 28px;
+  box-shadow: 0 24px 64px rgba(5, 7, 18, 0.55), 0 0 36px rgba(122, 92, 255, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: modalSlide 0.25s ease;
+}
+
+.dev-password-modal h3 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  letter-spacing: 0.4px;
+}
+
+.dev-password-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  background: rgba(9, 11, 20, 0.7);
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.dev-password-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(122, 92, 255, 0.25);
+}
+
+.dev-password-error {
+  color: var(--danger);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.dev-password-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+@media (max-width: 640px) {
+  html[data-dev-mode='true'] .modal-overlay {
+    padding: 72px 16px 120px;
+  }
+
+  .dev-password-modal {
+    padding: 22px;
+  }
+}

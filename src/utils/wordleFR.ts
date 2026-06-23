@@ -606,6 +606,13 @@ export function getRandomWordFR(): string {
   return WORD_LIST_FR[Math.floor(Math.random() * WORD_LIST_FR.length)];
 }
 
+export function getDailyWordFR(): string {
+  const today = new Date();
+  const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+  const index = seed % WORD_LIST_FR.length;
+  return WORD_LIST_FR[index];
+}
+
 export function isValidWordFR(word: string): boolean {
   return WORD_SET_FR.has(word.toUpperCase());
 }

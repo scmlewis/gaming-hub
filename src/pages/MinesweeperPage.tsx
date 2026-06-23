@@ -1,22 +1,15 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import GameLayout from '../components/GameLayout';
 import Icon from '../components/icons';
 import Dropdown from '../components/Dropdown';
 import DevPanel, { DevButton, DevInfo, DevSection } from '../components/DevPanel';
-import { STORAGE_KEYS, MINESWEEPER_MAX_ROWS, MINESWEEPER_MAX_COLS } from '../constants';
-import {
-  MineGrid,
-  Difficulty,
-  DIFFICULTIES,
-  createGrid,
-  revealCell,
-  toggleFlag,
-  checkWin,
-  checkLose,
-  revealAllMines,
-  countFlags,
-  chordReveal,
-} from '../utils/minesweeper';
+import Confetti from '../components/Confetti';
+import StatsModal from '../components/StatsModal';
+import ShareButton from '../components/ShareButton';
+import { MINESWEEPER_MAX_ROWS, MINESWEEPER_MAX_COLS } from '../constants';
+import { getStats } from '../utils/stats';
+import { countFlags } from '../utils/minesweeper';
+import useMinesweeper from '../hooks/useMinesweeper';
 
 const NUMBER_CLASSES: Record<number, string> = {
   1: 'number-1',
@@ -38,19 +31,8 @@ function formatTime(seconds: number): string {
     .padStart(2, '0')}`;
 }
 
-function createEmptyDisplay(rows: number, cols: number): MineGrid {
-  return Array.from({ length: rows }, () =>
-    Array.from({ length: cols }, () => ({
-      isMine: false,
-      isRevealed: false,
-      isFlagged: false,
-      adjacentMines: 0,
-    }))
-  );
-}
-
 type MinesweeperGridProps = {
-  grid: MineGrid;
+  grid: ReturnType<typeof useMinesweeper>['displayGrid'];
   rows: number;
   cols: number;
   showMines: boolean;
@@ -68,12 +50,14 @@ const MinesweeperGrid = React.memo(function MinesweeperGrid({
   onCellClick,
   onToggleFlag,
 }: MinesweeperGridProps) {
+  const touchStartRef = React.useRef<{ x: number; y: number } | null>(null);
+
   return (
     <div className="minesweeper-grid-wrap">
       <div className="minesweeper-hint mobile-only">Drag to pan for large boards</div>
       <div
         className="minesweeper-grid"
-        onContextMenu={(e) => e.preventDefault()} /* prevent browser context menu inside grid */
+        onContextMenu={(e) => e.preventDefault()}
         style={
           {
             gridTemplateColumns: `repeat(${cols}, var(--mine-cell-size))`,
@@ -87,8 +71,6 @@ const MinesweeperGrid = React.memo(function MinesweeperGrid({
             let pointerTimer: number | null = null;
 
             const onAux = (e: React.MouseEvent) => {
-              // handle middle/right clicks consistently
-              // prevent default context menu
               e.preventDefault();
               if (e.button === 1) {
                 onCellClick(r, c, true);
@@ -98,31 +80,34 @@ const MinesweeperGrid = React.memo(function MinesweeperGrid({
             };
 
             const onPointerDown = (e: React.PointerEvent) => {
-              // For touch, start long-press timer to toggle flag
               if (e.pointerType === 'touch') {
-                // prevent default to avoid browser context menu on long-press
-                e.preventDefault();
+                touchStartRef.current = { x: e.clientX, y: e.clientY };
                 pointerTimer = window.setTimeout(() => {
-                  if (gameState === 'playing' && !grid[r][c].isRevealed) onToggleFlag(r, c);
+                  if (gameState === 'playing' && !grid[r][c].isRevealed) {
+                    onToggleFlag(r, c);
+                  }
                   pointerTimer = null;
                 }, 500);
               }
             };
 
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const onPointerUp = (_e: React.PointerEvent) => {
+            const onPointerUp = () => {
               if (pointerTimer) {
                 clearTimeout(pointerTimer as number);
                 pointerTimer = null;
-                // treat as a normal tap/click
                 onCellClick(r, c);
               }
             };
 
-            const onPointerMove = () => {
-              if (pointerTimer) {
-                clearTimeout(pointerTimer as number);
-                pointerTimer = null;
+            const onPointerMove = (e: React.PointerEvent) => {
+              if (pointerTimer && touchStartRef.current) {
+                const dx = e.clientX - touchStartRef.current.x;
+                const dy = e.clientY - touchStartRef.current.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist > 10) {
+                  clearTimeout(pointerTimer as number);
+                  pointerTimer = null;
+                }
               }
             };
 
@@ -168,146 +153,37 @@ const MinesweeperGrid = React.memo(function MinesweeperGrid({
 });
 
 export default function MinesweeperPage() {
-  const [difficulty, setDifficulty] = useState<Difficulty | 'custom'>('easy');
-  const [customConfig, setCustomConfig] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.MINESWEEPER_CUSTOM);
-    return saved ? JSON.parse(saved) : { rows: 16, cols: 16, mines: 40 };
-  });
-  const [grid, setGrid] = useState<MineGrid | null>(null);
-  const [gameState, setGameState] = useState<'waiting' | 'playing' | 'won' | 'lost'>('waiting');
-  const [time, setTime] = useState(0);
-  const [timerRunning, setTimerRunning] = useState(false);
-  const [showMines, setShowMines] = useState(false);
-  const [flagMode, setFlagMode] = useState(false);
-
-  const triggerHaptic = useCallback((ms: number) => {
-    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-      navigator.vibrate(ms);
-    }
-  }, []);
-
-  const config = difficulty === 'custom' ? customConfig : DIFFICULTIES[difficulty];
-
-  // Save custom config to localStorage
-  useEffect(() => {
-    if (difficulty === 'custom') {
-      localStorage.setItem(STORAGE_KEYS.MINESWEEPER_CUSTOM, JSON.stringify(customConfig));
-    }
-  }, [customConfig, difficulty]);
-
-  const startNewGame = useCallback(() => {
-    setGrid(null);
-    setGameState('waiting');
-    setTime(0);
-    setTimerRunning(false);
-  }, []);
-
-  useEffect(() => {
-    startNewGame();
-  }, [difficulty, startNewGame]);
-
-  useEffect(() => {
-    if (!timerRunning) return;
-    const id = setInterval(() => setTime((t) => t + 1), 1000);
-    return () => clearInterval(id);
-  }, [timerRunning]);
-
-  const handleCellClick = useCallback(
-    (row: number, col: number, isMiddleClick = false) => {
-      if (gameState === 'won' || gameState === 'lost') return;
-
-      let currentGrid = grid;
-      if (!currentGrid) {
-        // First click - generate grid avoiding this cell
-        currentGrid = createGrid(config.rows, config.cols, config.mines, [row, col]);
-        setGameState('playing');
-        setTimerRunning(true);
-      }
-
-      if (
-        flagMode &&
-        gameState === 'playing' &&
-        currentGrid &&
-        !currentGrid[row][col].isRevealed &&
-        !isMiddleClick
-      ) {
-        setGrid(toggleFlag(currentGrid, row, col));
-        triggerHaptic(10);
-        return;
-      }
-
-      if (currentGrid[row][col].isFlagged && !isMiddleClick) return;
-
-      // Chord clicking: middle-click or click on revealed cell with satisfied numbers
-      if (isMiddleClick && currentGrid[row][col].isRevealed) {
-        const newGrid = chordReveal(currentGrid, row, col);
-        setGrid(newGrid);
-
-        if (checkLose(newGrid)) {
-          setGrid(revealAllMines(newGrid));
-          setGameState('lost');
-          setTimerRunning(false);
-        } else if (checkWin(newGrid)) {
-          setGameState('won');
-          setTimerRunning(false);
-        }
-        return;
-      }
-
-      const newGrid = revealCell(currentGrid, row, col);
-      setGrid(newGrid);
-      triggerHaptic(8);
-
-      if (checkLose(newGrid)) {
-        setGrid(revealAllMines(newGrid));
-        setGameState('lost');
-        setTimerRunning(false);
-      } else if (checkWin(newGrid)) {
-        setGameState('won');
-        setTimerRunning(false);
-      }
-    },
-    [config.cols, config.mines, config.rows, flagMode, gameState, grid, triggerHaptic]
-  );
-
-  function handleCustomConfigChange(field: 'rows' | 'cols' | 'mines', value: string) {
-    const num = parseInt(value) || 0;
-    setCustomConfig((prev: { rows: number; cols: number; mines: number }) => {
-      const updated = { ...prev, [field]: num };
-
-      // Validate constraints
-      if (field === 'rows') updated.rows = Math.min(Math.max(5, num), MINESWEEPER_MAX_ROWS);
-      if (field === 'cols') updated.cols = Math.min(Math.max(5, num), MINESWEEPER_MAX_COLS);
-      if (field === 'mines') {
-        const maxMines = updated.rows * updated.cols - 9; // Leave room for first click safety
-        updated.mines = Math.min(Math.max(1, num), maxMines);
-      }
-
-      return updated;
-    });
-  }
-
-  const flagCount = grid ? countFlags(grid) : 0;
-  const minesRemaining = config.mines - flagCount;
-
-  const toggleFlagSafe = useCallback(
-    (row: number, col: number) => {
-      if (!grid) return;
-      if (grid[row][col].isRevealed) return;
-      setGrid(toggleFlag(grid, row, col));
-      triggerHaptic(10);
-    },
-    [grid, triggerHaptic]
-  );
-
-  const emptyDisplay = useMemo(
-    () => createEmptyDisplay(config.rows, config.cols),
-    [config.rows, config.cols]
-  );
-  const displayGrid = grid || emptyDisplay;
+  const {
+    difficulty,
+    customConfig,
+    grid,
+    gameState,
+    time,
+    showMines,
+    flagMode,
+    muted,
+    showConfetti,
+    statsOpen,
+    config,
+    minesRemaining,
+    displayGrid,
+    setDifficulty,
+    setShowMines,
+    setFlagMode,
+    setStatsOpen,
+    startNewGame,
+    handleCellClick,
+    handleCustomConfigChange,
+    toggleFlagSafe,
+    toggleMute,
+    forceWin,
+    forceLose,
+    generateGridNow,
+  } = useMinesweeper();
 
   return (
     <GameLayout title="Minesweeper" color="#f43f5e" icon={<Icon name="minesweeper" />}>
+      <Confetti active={showConfetti} />
       <div className="game-toolbar">
         <div className="toolbar-group">
           <Dropdown
@@ -319,7 +195,7 @@ export default function MinesweeperPage() {
               { value: 'hard', label: 'Hard (16×30)' },
               { value: 'custom', label: 'Custom' },
             ]}
-            onChange={(v) => setDifficulty(v as Difficulty | 'custom')}
+            onChange={(v) => setDifficulty(v as 'easy' | 'medium' | 'hard' | 'custom')}
           />
         </div>
         {difficulty === 'custom' && (
@@ -363,6 +239,22 @@ export default function MinesweeperPage() {
           </div>
         )}
         <div className="toolbar-group">
+          <button
+            onClick={toggleMute}
+            className="btn-icon"
+            aria-label={muted ? 'Unmute game' : 'Mute game'}
+            title={muted ? 'Unmute' : 'Mute'}
+          >
+            <Icon name={muted ? 'volumeX' : 'volume'} size={18} />
+          </button>
+          <button
+            onClick={() => setStatsOpen(true)}
+            className="btn-icon"
+            aria-label="View statistics"
+            title="Statistics"
+          >
+            <span style={{ fontSize: '16px' }}>📊</span>
+          </button>
           <button onClick={startNewGame} className="btn-primary">
             New Game
           </button>
@@ -400,9 +292,16 @@ export default function MinesweeperPage() {
         {(gameState === 'won' || gameState === 'lost') && (
           <div className={`game-message ${gameState}`}>
             {gameState === 'won' ? '🎉 You Win!' : '💥 Game Over!'}
-            <button onClick={startNewGame} className="btn-primary" style={{ marginLeft: 12 }}>
-              Play Again
-            </button>
+            <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+              <button onClick={startNewGame} className="btn-primary">
+                Play Again
+              </button>
+              <ShareButton
+                text={`Minesweeper ${
+                  difficulty === 'custom' ? `${customConfig.rows}x${customConfig.cols}` : difficulty
+                } ${gameState === 'won' ? '✅' : '💥'} ${formatTime(time)}`}
+              />
+            </div>
           </div>
         )}
 
@@ -445,49 +344,13 @@ export default function MinesweeperPage() {
             >
               {showMines ? '👁️ Mines Visible' : '👁‍🗨️ Show Mines'}
             </DevButton>
-            <DevButton
-              onClick={() => {
-                if (grid) {
-                  // Reveal all non-mine cells to win
-                  const newGrid = grid.map((row) =>
-                    row.map((cell) => ({
-                      ...cell,
-                      isRevealed: !cell.isMine ? true : cell.isRevealed,
-                      isFlagged: cell.isMine ? true : cell.isFlagged,
-                    }))
-                  );
-                  setGrid(newGrid);
-                  setGameState('won');
-                  setTimerRunning(false);
-                }
-              }}
-              variant="success"
-            >
+            <DevButton onClick={forceWin} variant="success">
               🏆 Force Win
             </DevButton>
-            <DevButton
-              onClick={() => {
-                if (grid) {
-                  setGrid(revealAllMines(grid));
-                  setGameState('lost');
-                  setTimerRunning(false);
-                }
-              }}
-              variant="danger"
-            >
+            <DevButton onClick={forceLose} variant="danger">
               💥 Force Lose
             </DevButton>
-            <DevButton
-              onClick={() => {
-                // Generate grid immediately without waiting for first click
-                const newGrid = createGrid(config.rows, config.cols, config.mines);
-                setGrid(newGrid);
-                setGameState('playing');
-                setTime(0);
-                setTimerRunning(true);
-              }}
-              variant="default"
-            >
+            <DevButton onClick={generateGridNow} variant="default">
               🎲 Generate Grid Now
             </DevButton>
             <DevButton onClick={startNewGame} variant="default">
@@ -496,6 +359,13 @@ export default function MinesweeperPage() {
           </div>
         </DevSection>
       </DevPanel>
+
+      <StatsModal
+        open={statsOpen}
+        onClose={() => setStatsOpen(false)}
+        gameName="Minesweeper"
+        stats={getStats('minesweeper')}
+      />
     </GameLayout>
   );
 }

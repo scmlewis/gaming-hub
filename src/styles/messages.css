@@ -1,0 +1,148 @@
+/* =====================================================
+   GAME MESSAGES
+   ===================================================== */
+
+.game-message {
+  position: fixed;
+  top: env(safe-area-inset-top, 0);
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 20px 24px;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  font-size: 20px;
+  font-weight: 700;
+  z-index: 1001;
+  animation: messageSlideDown 0.3s ease;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: none;
+  overflow: hidden;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@keyframes messageAppear {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes messageSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.game-message.won {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.95), rgba(16, 185, 129, 0.95));
+  border-color: rgba(34, 197, 94, 0.65);
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.game-message.lost {
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.95), rgba(239, 68, 68, 0.95));
+  border-color: rgba(244, 63, 94, 0.65);
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.game-message::before {
+  display: none;
+}
+
+.game-message button {
+  margin-left: 0 !important;
+  margin-top: 8px;
+}
+
+.game-instructions {
+  margin-top: 24px;
+  font-size: 14px;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+/* =====================================================
+   MODALS
+   ===================================================== */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  width: min(360px, calc(100vw - 48px));
+  max-width: 90vw;
+  box-shadow: var(--shadow-lg);
+  animation: modalSlide 0.3s ease;
+}
+
+@keyframes modalSlide {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.modal h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.modal p {
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+/* When dev mode is active, float config modals a bit higher to avoid the dev panel */
+html[data-dev-mode='true'] .modal-overlay {
+  align-items: flex-start;
+  padding: 88px 24px 140px;
+}
+
+html[data-dev-mode='true'] .modal {
+  max-height: calc(100vh - 180px);
+  overflow: auto;
+}

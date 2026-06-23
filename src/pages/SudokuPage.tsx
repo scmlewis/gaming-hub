@@ -5,6 +5,9 @@ import Icon from '../components/icons';
 import Board from '../components/Board';
 import Dropdown from '../components/Dropdown';
 import Settings from '../components/Settings';
+import StatsModal from '../components/StatsModal';
+import { audioService } from '../utils/audio';
+import { getStats } from '../utils/stats';
 
 export default function SudokuPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -22,6 +25,7 @@ export default function SudokuPage() {
   });
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [muted, setMuted] = useState(() => audioService.isMuted());
   const [peerHighlight, setPeerHighlight] = useState<boolean>(() => {
     const v = localStorage.getItem('peerHighlight');
     return v === null ? true : v === 'true';
@@ -34,6 +38,7 @@ export default function SudokuPage() {
     () => (localStorage.getItem('fixedCellStyle') as 'filled' | 'outlined') || 'outlined'
   );
   const [accent, setAccent] = useState(() => localStorage.getItem('accent') || 'blue');
+  const [statsOpen, setStatsOpen] = useState(false);
 
   const getAccentColor = (accentName: string) => {
     const colors: Record<string, string> = {
@@ -56,6 +61,11 @@ export default function SudokuPage() {
     if (largeFont) document.documentElement.setAttribute('data-large-font', 'true');
     else document.documentElement.removeAttribute('data-large-font');
   }, [peerHighlight, largeFont]);
+
+  const toggleMute = () => {
+    const nextVal = audioService.toggleMute();
+    setMuted(nextVal);
+  };
 
   function newGame() {
     // Generate new seed and update URL
@@ -116,6 +126,22 @@ export default function SudokuPage() {
           />
         </div>
         <div className="toolbar-group">
+          <button
+            onClick={toggleMute}
+            className="btn-icon"
+            aria-label={muted ? 'Unmute game' : 'Mute game'}
+            title={muted ? 'Unmute' : 'Mute'}
+          >
+            <Icon name={muted ? 'volumeX' : 'volume'} size={18} />
+          </button>
+          <button
+            onClick={() => setStatsOpen(true)}
+            className="btn-icon"
+            aria-label="View statistics"
+            title="Statistics"
+          >
+            <span style={{ fontSize: '16px' }}>📊</span>
+          </button>
           <button onClick={newGame} className="btn-primary">
             New Game
           </button>
@@ -151,6 +177,13 @@ export default function SudokuPage() {
         onSeedSubmit={handleSeedSubmit}
         onShareSeed={handleShareSeed}
         copied={copied}
+      />
+
+      <StatsModal
+        open={statsOpen}
+        onClose={() => setStatsOpen(false)}
+        gameName="Sudoku"
+        stats={getStats('sudoku')}
       />
     </GameLayout>
   );

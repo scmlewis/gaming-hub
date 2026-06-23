@@ -1,0 +1,236 @@
+/* =====================================================
+   NONOGRAM
+   ===================================================== */
+
+.nonogram-container {
+  text-align: center;
+}
+
+.nonogram-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.nonogram-stats .stat {
+  min-width: 0;
+  padding: 10px 12px;
+  gap: 8px;
+}
+
+.nonogram-board-wrap {
+  max-width: 100%;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nonogram-board {
+  --cell-size: 36px;
+  display: inline-grid;
+  gap: 0;
+  padding: 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  touch-action: manipulation;
+}
+
+/* Column clue cells */
+.nonogram-col-clue {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  font-family: var(--font-mono, 'Courier New', monospace);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  border-bottom: 2px solid var(--border-subtle);
+  padding: 2px;
+  user-select: none;
+}
+
+/* Row clue cells */
+.nonogram-row-clue {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  font-family: var(--font-mono, 'Courier New', monospace);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  border-right: 2px solid var(--border-subtle);
+  padding: 2px 6px;
+  user-select: none;
+}
+
+/* Top-left corner empty cell */
+.nonogram-corner {
+  border-bottom: 2px solid var(--border-subtle);
+  border-right: 2px solid var(--border-subtle);
+}
+
+/* Puzzle cells */
+.nonogram-cell {
+  width: var(--cell-size);
+  height: var(--cell-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  font-size: calc(var(--cell-size) * 0.45);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nonogram-cell:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nonogram-cell.filled {
+  background: var(--game-accent);
+  color: #fff;
+}
+
+.nonogram-cell.marked {
+  background: var(--bg-secondary);
+  color: var(--text-tertiary);
+  font-size: calc(var(--cell-size) * 0.5);
+}
+
+.nonogram-cell.correct {
+  background: rgba(34, 197, 94, 0.35);
+  box-shadow: inset 0 0 0 2px rgba(34, 197, 94, 0.5);
+}
+
+/* Separator borders every 5 cells */
+.nonogram-cell.sep-right {
+  border-right: 2px solid var(--text-tertiary);
+}
+
+.nonogram-cell.sep-bottom {
+  border-bottom: 2px solid var(--text-tertiary);
+}
+
+/* Clue group highlighting */
+.nonogram-row-clue.highlight,
+.nonogram-col-clue.highlight {
+  color: var(--game-accent);
+}
+
+.nonogram-cell:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nonogram-cell.filled:hover:not(:disabled) {
+  background: var(--game-accent);
+  filter: brightness(1.15);
+}
+
+/* Disabled state after win/lose */
+.nonogram-cell:disabled {
+  cursor: default;
+  opacity: 0.85;
+}
+
+/* Nonogram mode toggle */
+.nonogram-mode-toggle {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.nonogram-mode-btn {
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s;
+}
+
+.nonogram-mode-btn.active {
+  background: var(--game-accent, #ec4899);
+  color: #fff;
+  border-color: var(--game-accent, #ec4899);
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+  .nonogram-stats {
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .nonogram-stats .stat {
+    padding: 8px 6px;
+    gap: 4px;
+  }
+
+  .nonogram-stats .stat-icon {
+    font-size: 14px;
+    opacity: 0.5;
+  }
+
+  .nonogram-stats .stat-display {
+    padding: 6px 8px;
+  }
+
+  .nonogram-stats .stat-ghost {
+    font-size: 14px;
+    letter-spacing: 1px;
+    left: 8px;
+    top: 6px;
+  }
+
+  .nonogram-stats .stat-value {
+    font-size: 16px;
+    letter-spacing: 1px;
+  }
+
+  .nonogram-stats .stat-label {
+    display: none;
+  }
+
+  .nonogram-board {
+    --cell-size: 28px;
+  }
+  .nonogram-col-clue,
+  .nonogram-row-clue {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 400px) {
+  .nonogram-stats {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .nonogram-stats .stat {
+    justify-content: center;
+  }
+
+  .nonogram-board {
+    --cell-size: 24px;
+  }
+  .nonogram-col-clue,
+  .nonogram-row-clue {
+    font-size: 10px;
+  }
+}

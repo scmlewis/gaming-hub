@@ -8,7 +8,7 @@ export const TIMEOUTS = {
   CHECK_MESSAGE: 1800,
   CHECK_WRONG_HIGHLIGHT: 1400,
   COMPLETED_MODAL_DELAY: 20,
-} as const
+} as const;
 
 export const STORAGE_KEYS = {
   SUDOKU_SAVE: 'sudoku-save-v1',
@@ -21,8 +21,12 @@ export const STORAGE_KEYS = {
   MINESWEEPER_CUSTOM: 'minesweeper-custom-config',
   GAME_2048_THEME: '2048-tile-theme',
   GAME_2048_BEST: '2048-best',
+  SNAKE_BEST: 'snake-best',
   WORDLE_LANGUAGE: 'wordle-language',
-} as const
+  TETRIS_BEST: 'tetris-best',
+  NONOGRAM_BEST: 'nonogram-best',
+  NONOGRAM_SIZE: 'nonogram-size',
+} as const;
 
 export const DEFAULT_VALUES = {
   THEME: 'dark',
@@ -31,17 +35,16 @@ export const DEFAULT_VALUES = {
   PEER_HIGHLIGHT: true,
   LARGE_FONT: false,
   COMPACT_SIDEBAR: false,
-} as const
+} as const;
 
 export const CLUES_BY_DIFFICULTY_9X9 = {
   easy: 36,
   medium: 30,
   hard: 26,
-} as const
+} as const;
 
-export const MAX_HISTORY_SIZE = 100
-export const MAX_SAVE_FILE_SIZE = 100 * 1024 // 100KB
-export const MAX_MOVE_HISTORY = 100 // Max moves to store for 2048 replay
-export const MINESWEEPER_MAX_ROWS = 50
-export const MINESWEEPER_MAX_COLS = 50
-
+export const MAX_HISTORY_SIZE = 100;
+export const MAX_SAVE_FILE_SIZE = 100 * 1024; // 100KB
+export const MAX_MOVE_HISTORY = 100; // Max moves to store for 2048 replay
+export const MINESWEEPER_MAX_ROWS = 50;
+export const MINESWEEPER_MAX_COLS = 50;

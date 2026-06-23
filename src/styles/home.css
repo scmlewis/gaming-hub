@@ -1,0 +1,135 @@
+/* =====================================================
+   HOME PAGE
+   ===================================================== */
+
+.home-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: radial-gradient(ellipse 70% 40% at 50% -10%, rgba(122, 92, 255, 0.2), transparent 60%),
+    radial-gradient(circle at 80% 10%, rgba(68, 209, 141, 0.12), transparent 40%), var(--bg-primary);
+  padding: 40px 24px 72px;
+}
+
+.app-root {
+  position: relative;
+  min-height: 100%;
+}
+
+.app-root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 3px 3px;
+  opacity: 0.18;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+  z-index: 0;
+}
+
+.app-root > * {
+  position: relative;
+  z-index: 1;
+}
+
+.home-header {
+  max-width: 1200px;
+  margin: 0 auto 48px;
+  text-align: center;
+}
+
+.home-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.brand-icon {
+  font-size: 48px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.brand-icon svg {
+  color: var(--accent);
+  filter: drop-shadow(0 6px 18px rgba(122, 92, 255, 0.35));
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.home-header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff 0%, var(--accent-light) 60%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
+}
+
+.home-tagline {
+  font-size: 18px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+/* Games Grid */
+.games-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+/* Footer */
+.home-footer {
+  max-width: 1200px;
+  margin: 64px auto 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-subtle);
+  text-align: center;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 12px;
+}
+
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  background: var(--glass-bg);
+  transition: all var(--transition-fast);
+}
+
+.footer-link:hover {
+  color: var(--text-primary);
+  border-color: var(--accent);
+  background: var(--accent-glow);
+  transform: translateY(-2px);
+}
+
+.footer-tech {
+  font-size: 13px;
+  color: var(--text-muted);
+}

@@ -1,0 +1,263 @@
+/* =====================================================
+   WORDLE
+   ===================================================== */
+
+.wordle-page {
+  text-align: center;
+  padding-bottom: 40px;
+}
+
+.wordle-board {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.wordle-row {
+  display: flex;
+  gap: 8px;
+}
+
+.wordle-row.shake {
+  animation: shake 0.4s ease;
+}
+
+/* =====================================================
+   MOBILE / TOUCH ADJUSTMENTS
+   ===================================================== */
+
+/* Sudoku Mobile Keypad - Inline Layout */
+.sudoku-mobile-keypad {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 0;
+  background: transparent;
+  touch-action: manipulation;
+  margin-top: -4px;
+}
+
+.sudoku-keypad-numbers {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 6px;
+}
+
+.sudoku-keypad-number {
+  min-height: 44px;
+  padding: 8px;
+  border-radius: 10px;
+  background: var(--glass-bg);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: all 0.12s ease;
+}
+
+.sudoku-keypad-number:active {
+  transform: translateY(-2px);
+  background: var(--game-accent-light, #e0e7ff);
+}
+
+/* Larger cell and reduced hover/shine on touch devices */
+@media (max-width: 768px) {
+  .board {
+    gap: 6px;
+  }
+  .row {
+    gap: 6px;
+  }
+  .cell {
+    border-radius: 10px;
+    font-size: calc(var(--cell-size) * 0.5);
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* reduce heavy shadows/glows for small screens */
+  .cell-selected {
+    box-shadow: 0 8px 20px rgba(var(--game-accent-rgb, 99, 102, 241), 0.12),
+      0 0 0 2px rgba(var(--game-accent-rgb, 99, 102, 241), 0.05);
+  }
+}
+
+/* Remove hover transitions for devices that don't support hover */
+@media (hover: none) {
+  .cell:hover,
+  .btn-secondary:hover,
+  .btn-icon:hover,
+  .game-card:hover .game-card-icon {
+    transform: none;
+    box-shadow: none;
+  }
+  .cell {
+    transition: background-color 0.12s ease, border-color 0.12s ease;
+  }
+}
+
+/* Slightly increase hit area for notes / keypad interaction on small screens */
+@media (max-width: 480px) {
+  .mobile-keypad {
+    height: 260px;
+  }
+  .mobile-keypad .keypad-key {
+    min-height: 64px;
+    font-size: 20px;
+  }
+}
+
+.wordle-tile {
+  width: 62px;
+  height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-md);
+  font-size: 28px;
+  font-weight: 800;
+  text-transform: uppercase;
+  transition: all var(--transition-fast);
+}
+
+.wordle-tile.filled,
+.wordle-tile.tbd {
+  border-color: var(--text-tertiary);
+  animation: pop 0.1s ease;
+}
+
+@keyframes pop {
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.wordle-tile.correct {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  border-color: #22c55e;
+  color: white;
+}
+
+.wordle-tile.present {
+  background: linear-gradient(135deg, #eab308, #ca8a04);
+  border-color: #eab308;
+  color: white;
+}
+
+.wordle-tile.absent {
+  background: var(--bg-tertiary);
+  border-color: var(--bg-tertiary);
+  color: var(--text-tertiary);
+}
+
+.wordle-keyboard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.keyboard-row {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+  max-width: 520px;
+  justify-content: center;
+}
+
+.keyboard-key {
+  flex: 1 1 0;
+  min-width: 36px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--text-primary);
+  touch-action: manipulation;
+}
+
+.keyboard-key:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+.keyboard-key.wide {
+  flex: 1.5 1 0;
+  min-width: 52px;
+  font-size: 12px;
+}
+
+.keyboard-key.correct {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  border-color: #22c55e;
+  color: white;
+}
+
+.keyboard-key.present {
+  background: linear-gradient(135deg, #eab308, #ca8a04);
+  border-color: #eab308;
+  color: white;
+}
+
+.keyboard-key.absent {
+  background: var(--bg-tertiary);
+  border-color: var(--bg-tertiary);
+  color: var(--text-muted);
+}
+
+.wordle-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 24px 36px;
+  background: var(--bg-elevated);
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  font-size: 18px;
+  font-weight: 700;
+  z-index: 1001;
+  animation: messageAppear 0.4s ease;
+  box-shadow: var(--shadow-lg);
+  max-width: calc(100vw - 48px);
+  text-align: center;
+}
+
+/* Wordle message overlay backdrop */
+.wordle-message::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: -1;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

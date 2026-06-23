@@ -3,18 +3,35 @@ import GameLayout from '../components/GameLayout';
 import Icon from '../components/icons';
 import Dropdown from '../components/Dropdown';
 import DevPanel, { DevButton, DevInfo, DevSection } from '../components/DevPanel';
+import Confetti from '../components/Confetti';
+import StatsModal from '../components/StatsModal';
+import ShareButton from '../components/ShareButton';
 import { STORAGE_KEYS } from '../constants';
+import { recordGame, getStats } from '../utils/stats';
 import {
   GuessResult,
   LetterState,
   getRandomWord,
+  getDailyWord,
   checkGuess,
   isValidWord,
   KEYBOARD_ROWS,
   WORD_LIST,
 } from '../utils/wordle';
-import { getRandomWordFR, isValidWordFR, KEYBOARD_ROWS_FR, WORD_LIST_FR } from '../utils/wordleFR';
-import { getRandomWordES, isValidWordES, KEYBOARD_ROWS_ES, WORD_LIST_ES } from '../utils/wordleES';
+import {
+  getRandomWordFR,
+  getDailyWordFR,
+  isValidWordFR,
+  KEYBOARD_ROWS_FR,
+  WORD_LIST_FR,
+} from '../utils/wordleFR';
+import {
+  getRandomWordES,
+  getDailyWordES,
+  isValidWordES,
+  KEYBOARD_ROWS_ES,
+  WORD_LIST_ES,
+} from '../utils/wordleES';
 
 const MAX_GUESSES = 6;
 
@@ -26,7 +43,16 @@ export default function WordlePage() {
     return saved === 'fr' || saved === 'es' ? saved : 'en';
   });
 
-  const getWord = () => {
+  const [isDaily, setIsDaily] = useState(false);
+  const [statsOpen, setStatsOpen] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  const getWord = (daily: boolean) => {
+    if (daily) {
+      if (language === 'fr') return getDailyWordFR();
+      if (language === 'es') return getDailyWordES();
+      return getDailyWord();
+    }
     if (language === 'fr') return getRandomWordFR();
     if (language === 'es') return getRandomWordES();
     return getRandomWord();
@@ -44,7 +70,7 @@ export default function WordlePage() {
     return KEYBOARD_ROWS;
   };
 
-  const [answer, setAnswer] = useState(() => getWord());
+  const [answer, setAnswer] = useState(() => getWord(false));
   const [guesses, setGuesses] = useState<GuessResult[]>([]);
   const [currentGuess, setCurrentGuess] = useState('');
   const [gameState, setGameState] = useState<'playing' | 'won' | 'lost'>('playing');
@@ -69,14 +95,16 @@ export default function WordlePage() {
     startNewGame();
   }, [language]);
 
-  function startNewGame() {
-    const newAnswer = getWord();
+  function startNewGame(daily = false) {
+    const newAnswer = getWord(daily);
     setAnswer(newAnswer);
+    setIsDaily(daily);
     setGuesses([]);
     setCurrentGuess('');
     setGameState('playing');
     setKeyStates({});
     setMessage(null);
+    setShowConfetti(false);
   }
 
   function showMessage(msg: string, duration = 1500) {
@@ -121,9 +149,12 @@ export default function WordlePage() {
 
     if (currentGuess.toUpperCase() === answer) {
       setGameState('won');
+      setShowConfetti(true);
+      recordGame('wordle', true);
       showMessage('Excellent!', 3000);
     } else if (newGuesses.length >= MAX_GUESSES) {
       setGameState('lost');
+      recordGame('wordle', false);
       showMessage(answer, 5000);
     }
   }
@@ -175,8 +206,20 @@ export default function WordlePage() {
     }
   }
 
+  // Build share text
+  const buildShareText = () => {
+    const emojiMap: Record<string, string> = { correct: '🟩', present: '🟨', absent: '⬛' };
+    const modeStr = isDaily ? ' Daily' : '';
+    const rows = guesses.map((g) => g.map((l) => emojiMap[l.state]).join('')).join('\n');
+    return `Wordle${modeStr} ${guesses.length}/${MAX_GUESSES}\n\n${rows}`;
+  };
+
+  const stats = getStats('wordle');
+
   return (
     <GameLayout title="Wordle" color="#22c55e" icon={<Icon name="wordle" />}>
+      <Confetti active={showConfetti} />
+
       <div className="wordle-page">
         <div
           style={{
@@ -189,34 +232,54 @@ export default function WordlePage() {
             padding: '0 8px',
           }}
         >
-          <Dropdown
-            ariaLabel="Select language"
-            value={language}
-            options={[
-              { value: 'en', label: 'English' },
-              { value: 'fr', label: 'Français' },
-              { value: 'es', label: 'Español' },
-            ]}
-            onChange={(v) => setLanguage(v as Language)}
-          />
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <Dropdown
+              ariaLabel="Select language"
+              value={language}
+              options={[
+                { value: 'en', label: 'English' },
+                { value: 'fr', label: 'Français' },
+                { value: 'es', label: 'Español' },
+              ]}
+              onChange={(v) => setLanguage(v as Language)}
+            />
+            <button
+              onClick={() => startNewGame(!isDaily)}
+              className={`btn-secondary ${isDaily ? 'selected' : ''}`}
+              style={{ fontSize: '13px', padding: '8px 12px' }}
+            >
+              Daily
+            </button>
+          </div>
           <span
             className="game-stat"
             style={{ fontSize: '14px', color: 'var(--text-secondary)', flex: '0 0 auto' }}
           >
-            Guess {Math.min(guesses.length + 1, MAX_GUESSES)}/{MAX_GUESSES}
+            {guesses.length}/{MAX_GUESSES}
           </span>
-          <button
-            onClick={startNewGame}
-            className="btn-primary"
-            style={{
-              padding: '8px 16px',
-              fontSize: '14px',
-              flex: '0 0 auto',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            New
-          </button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              onClick={() => setStatsOpen(true)}
+              className="btn-icon"
+              aria-label="View statistics"
+              title="Statistics"
+            >
+              <span style={{ fontSize: '16px' }}>📊</span>
+            </button>
+            {gameState !== 'playing' && <ShareButton text={buildShareText()} />}
+            <button
+              onClick={() => startNewGame(isDaily)}
+              className="btn-primary"
+              style={{
+                padding: '8px 16px',
+                fontSize: '14px',
+                flex: '0 0 auto',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              New
+            </button>
+          </div>
         </div>
 
         {message && <div className="wordle-message">{message}</div>}
@@ -232,11 +295,9 @@ export default function WordlePage() {
                 let state: LetterState = 'empty';
 
                 if (Array.isArray(row)) {
-                  // Completed guess
                   letter = row[colIdx].letter;
                   state = row[colIdx].state;
                 } else if (typeof row === 'string') {
-                  // Current guess
                   letter = row[colIdx] || '';
                   state = letter.trim() ? 'tbd' : 'empty';
                 }
@@ -254,9 +315,16 @@ export default function WordlePage() {
         {gameState !== 'playing' && (
           <div className={`game-message ${gameState}`}>
             {gameState === 'won' ? 'You got it!' : `The word was: ${answer}`}
-            <button onClick={startNewGame} className="btn-primary" style={{ marginLeft: 12 }}>
-              Play Again
-            </button>
+            <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+              <button onClick={() => startNewGame(isDaily)} className="btn-primary">
+                Play Again
+              </button>
+              {isDaily && (
+                <button onClick={() => startNewGame(false)} className="btn-secondary">
+                  Practice
+                </button>
+              )}
+            </div>
           </div>
         )}
 
@@ -277,9 +345,17 @@ export default function WordlePage() {
         </div>
       </div>
 
+      <StatsModal
+        open={statsOpen}
+        onClose={() => setStatsOpen(false)}
+        gameName="Wordle"
+        stats={stats}
+      />
+
       <DevPanel title="Wordle Dev Tools">
         <DevSection title="Game Info">
           <DevInfo label="Language" value={language.toUpperCase()} />
+          <DevInfo label="Mode" value={isDaily ? 'Daily' : 'Practice'} />
           <DevInfo label="Answer" value={answer} />
           <DevInfo label="Guesses" value={`${guesses.length}/${MAX_GUESSES}`} />
           <DevInfo label="State" value={gameState} />
@@ -287,7 +363,7 @@ export default function WordlePage() {
         <DevSection title="Actions">
           <div className="dev-actions">
             <DevButton onClick={() => setCurrentGuess(answer.toUpperCase())} variant="success">
-              🎯 Auto-fill Answer
+              Auto-fill Answer
             </DevButton>
             <DevButton
               onClick={() => {
@@ -299,22 +375,22 @@ export default function WordlePage() {
               }}
               variant="default"
             >
-              🎲 Random Valid Word
+              Random Valid Word
             </DevButton>
             <DevButton
               onClick={() => setSkipValidation(!skipValidation)}
               variant={skipValidation ? 'warning' : 'default'}
             >
-              {skipValidation ? '✅ Skip Validation ON' : '❌ Skip Validation OFF'}
+              {skipValidation ? 'Skip Validation ON' : 'Skip Validation OFF'}
             </DevButton>
             <DevButton onClick={() => setGameState('won')} variant="success">
-              🏆 Force Win
+              Force Win
             </DevButton>
             <DevButton onClick={() => setGameState('lost')} variant="danger">
-              💥 Force Lose
+              Force Lose
             </DevButton>
-            <DevButton onClick={startNewGame} variant="default">
-              🔄 Reset Game
+            <DevButton onClick={() => startNewGame(isDaily)} variant="default">
+              Reset Game
             </DevButton>
           </div>
         </DevSection>

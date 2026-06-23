@@ -1,0 +1,406 @@
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+
+@media (max-width: 768px) {
+  .home-page {
+    padding: 24px 16px 48px;
+  }
+
+  .home-header h1 {
+    font-size: 28px;
+  }
+
+  .games-grid {
+    gap: 16px;
+  }
+
+  .game-card {
+    padding: 20px;
+    padding-right: 64px;
+  }
+
+  .game-card-arrow {
+    right: 20px;
+    bottom: 20px;
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
+
+  .game-card-content p {
+    margin-right: 0;
+  }
+
+  .game-layout {
+    padding: 12px;
+  }
+
+  .game-header {
+    margin: 0 auto 12px;
+    gap: 10px;
+  }
+
+  .game-title {
+    font-size: 20px;
+  }
+
+  .back-button {
+    padding: 10px 14px;
+    font-size: 13px;
+    min-height: 44px;
+  }
+
+  .board-card {
+    padding: 12px;
+  }
+
+  .game-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .toolbar-group {
+    justify-content: center;
+  }
+
+  .board-card {
+    flex-direction: column;
+    padding: 12px;
+  }
+
+  .board-left {
+    flex: 0 0 auto;
+  }
+
+  .sudoku-side {
+    display: none;
+  }
+
+  .sudoku-mobile-controls {
+    display: flex;
+  }
+
+  .sudoku-action-row.mobile-only {
+    display: flex;
+  }
+
+  .sudoku-action-row {
+    gap: 6px;
+    padding: 6px 8px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    justify-items: center;
+  }
+
+  .sudoku-action-row .sudoku-action-btn {
+    min-width: 48px;
+    height: 48px;
+    font-size: 18px;
+    border-radius: 12px;
+  }
+
+  .row {
+    grid-template-columns: repeat(var(--cols, 9), 1fr);
+  }
+
+  .cell {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    font-size: clamp(16px, 4.5vw, 22px);
+    min-width: 0;
+    touch-action: manipulation;
+  }
+
+  .board {
+    gap: 3px;
+  }
+
+  .row {
+    gap: 3px;
+  }
+
+  .timer-display {
+    padding: 8px 10px;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .timer-value {
+    font-size: 16px;
+  }
+
+  .timer-actions button {
+    font-size: 12px;
+    padding: 8px 14px;
+    min-height: 44px;
+  }
+
+  .board-controls button {
+    font-size: 13px;
+    padding: 8px 14px;
+    min-height: 44px;
+  }
+
+  .game-toolbar .btn-primary {
+    padding: 10px 16px;
+    font-size: 13px;
+    min-height: 44px;
+  }
+
+  .game-toolbar select,
+  .game-toolbar .dropdown-button {
+    padding: 10px 14px;
+    font-size: 13px;
+    min-height: 44px;
+  }
+
+  /* Mobile numeric keypad styling */
+  .mobile-keypad {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: env(safe-area-inset-bottom, 0);
+    background: var(--bg-secondary);
+    padding: 10px;
+    box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.35);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    z-index: 1200;
+  }
+
+  .mobile-keypad .keypad-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 4px;
+  }
+
+  .keypad-close {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 18px;
+    padding: 6px 8px;
+  }
+
+  .mobile-keypad .keypad-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .keypad-key {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    padding: 12px 6px;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .board-info {
+    font-size: 12px;
+    margin-top: 0;
+  }
+
+  .modal {
+    width: min(320px, calc(100vw - 32px));
+    padding: 24px;
+  }
+
+  /* Minesweeper */
+  .minesweeper-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .minesweeper-grid {
+    --mine-cell-size: min(32px, calc((100vw - 80px) / var(--grid-cols, 16)));
+    gap: 2px;
+    padding: 12px;
+    justify-self: center;
+  }
+
+  .minesweeper-stats {
+    gap: 12px;
+  }
+
+  .stat {
+    padding: 12px 16px;
+    min-width: 100px;
+  }
+
+  .stat-value {
+    font-size: 18px;
+  }
+
+  .desktop-only {
+    display: none;
+  }
+
+  .mobile-only {
+    display: inline;
+  }
+
+  /* 2048 */
+  .game-2048-grid {
+    --2048-cell: 64px;
+    --2048-gap: 8px;
+    --2048-pad: 12px;
+  }
+
+  .tile-2048 {
+    font-size: 24px;
+  }
+
+  /* Wordle */
+  .wordle-tile {
+    width: 52px;
+    height: 52px;
+    font-size: 24px;
+  }
+
+  .keyboard-key {
+    min-width: 36px;
+    height: 48px;
+    font-size: 13px;
+  }
+
+  .keyboard-key.wide {
+    min-width: 56px;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-layout {
+    padding: 12px;
+  }
+
+  .board-card {
+    padding: 10px;
+  }
+
+  .minesweeper-grid {
+    --mine-cell-size: 28px;
+    gap: 2px;
+    padding: 10px;
+  }
+
+  .game-2048-grid {
+    --2048-cell: 56px;
+    --2048-gap: 6px;
+    --2048-pad: 10px;
+  }
+
+  .tile-2048 {
+    font-size: 20px;
+  }
+
+  .tile-2048.tile-font-md {
+    font-size: 16px;
+  }
+  .tile-2048.tile-font-sm {
+    font-size: 12px;
+  }
+
+  /* Further adjust Sudoku for small screens */
+  .cell {
+    font-size: clamp(14px, 4vw, 18px);
+    min-width: 0;
+  }
+
+  .board {
+    gap: 2px;
+  }
+
+  /* Minesweeper even smaller cells for very small screens */
+  .minesweeper-grid {
+    --mine-cell-size: min(28px, calc((100vw - 60px) / var(--grid-cols, 16)));
+  }
+
+  .row {
+    gap: 2px;
+  }
+
+  .timer-display {
+    padding: 10px 14px;
+    gap: 12px;
+  }
+
+  .timer-value {
+    font-size: 18px;
+  }
+
+  .timer-actions button {
+    font-size: 12px;
+    padding: 8px 14px;
+    min-height: 44px;
+  }
+
+  .board-controls {
+    gap: 6px;
+  }
+
+  .board-controls button {
+    font-size: 12px;
+    padding: 8px 14px;
+    min-height: 44px;
+  }
+
+  .board-info {
+    font-size: 12px;
+    padding: 0 8px;
+    margin-top: 0;
+  }
+
+  .modal {
+    width: min(280px, calc(100vw - 32px));
+    padding: 20px;
+  }
+
+  .modal h2 {
+    font-size: 18px;
+  }
+
+  .modal p {
+    font-size: 13px;
+  }
+
+  .wordle-tile {
+    width: 46px;
+    height: 46px;
+    font-size: 20px;
+  }
+
+  .wordle-row {
+    gap: 6px;
+  }
+
+  .keyboard-key {
+    min-width: 0;
+    flex: 1 1 0;
+    height: 44px;
+    font-size: 12px;
+  }
+
+  .keyboard-key.wide {
+    min-width: 44px;
+    flex: 1.5 1 0;
+    font-size: 10px;
+  }
+
+  .wordle-message {
+    top: 20%;
+    transform: translate(-50%, -20%);
+    width: calc(100% - 32px);
+    text-align: center;
+  }
+}

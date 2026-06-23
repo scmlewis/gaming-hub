@@ -36,6 +36,30 @@ const games = [
     to: '/wordle',
     color: '#22c55e',
   },
+  {
+    id: 'snake',
+    title: 'Snake',
+    description: 'Guide the snake to eat food and grow. How long can you get?',
+    icon: <Icon name="snake" />,
+    to: '/snake',
+    color: '#06b6d4',
+  },
+  {
+    id: 'tetris',
+    title: 'Tetris',
+    description: 'Stack falling blocks, clear lines, and climb the levels. Classic puzzle action!',
+    icon: <Icon name="tetris" />,
+    to: '/tetris',
+    color: '#8b5cf6',
+  },
+  {
+    id: 'nonogram',
+    title: 'Nonogram',
+    description: 'Solve the picture puzzle by filling cells based on numeric clues.',
+    icon: <Icon name="nonogram" />,
+    to: '/nonogram',
+    color: '#ec4899',
+  },
 ];
 
 export default function Home() {
@@ -58,7 +82,27 @@ export default function Home() {
       </section>
 
       <footer className="home-footer">
-        <p>Built with React + TypeScript • Made with care</p>
+        <div className="footer-links">
+          <a
+            href="https://github.com/scmlewis"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="footer-link"
+          >
+            <Icon name="github" size={18} />
+            <span>scmlewis</span>
+          </a>
+          <a
+            href="https://github.com/scmlewis/gaming-hub"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="footer-link"
+          >
+            <Icon name="github" size={18} />
+            <span>Source Code</span>
+          </a>
+        </div>
+        <p className="footer-tech">Built with React + TypeScript</p>
       </footer>
     </div>
   );
