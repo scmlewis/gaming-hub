@@ -71,6 +71,11 @@
   margin-top: 8px;
 }
 
+.game-message > div {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 .game-instructions {
   margin-top: 24px;
   font-size: 14px;

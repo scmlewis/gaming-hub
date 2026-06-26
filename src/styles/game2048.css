@@ -11,6 +11,14 @@
   flex-wrap: wrap;
 }
 
+.game-2048-toolbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 .game-2048-scores {
   display: flex;
   gap: 12px;

@@ -10,9 +10,7 @@ import { TILE_THEMES } from '../utils/themes2048';
 import { getTileColor, getTileTextColor } from '../utils/game2048';
 import useGame2048 from '../hooks/useGame2048';
 
-function createTilesFromGrid(
-  grid: ReturnType<typeof useGame2048>['grid']
-): Array<{
+function createTilesFromGrid(grid: ReturnType<typeof useGame2048>['grid']): Array<{
   id: number;
   value: number;
   row: number;
@@ -98,7 +96,7 @@ export default function Game2048Page() {
             <div className="game-2048-score-value">{bestScore}</div>
           </div>
         </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <div className="game-2048-toolbar">
           <button
             onClick={toggleMute}
             className="btn-icon"
