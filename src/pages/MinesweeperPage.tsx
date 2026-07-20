@@ -54,7 +54,7 @@ const MinesweeperGrid = React.memo(function MinesweeperGrid({
 
   return (
     <div className="minesweeper-grid-wrap">
-      <div className="minesweeper-hint mobile-only">Drag to pan for large boards</div>
+      <div className="minesweeper-hint mobile-only">Grid scales to fit • Long-press to flag</div>
       <div
         className="minesweeper-grid"
         onContextMenu={(e) => e.preventDefault()}

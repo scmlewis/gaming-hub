@@ -665,6 +665,9 @@ export default function TetrisPage() {
             ← → Move • ↓ Soft Drop • Space Hard Drop • ↑/X Rotate CW • Z Rotate CCW • C Hold • P
             Pause
           </span>
+          <span className="mobile-only">
+            ◀ ▶ Move • ▼ Soft Drop • ↻ Rotate • ⤓ Hard Drop • Hold to swap piece
+          </span>
         </p>
       </div>
 

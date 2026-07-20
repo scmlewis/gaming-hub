@@ -33,6 +33,8 @@ export default function Icon({ name, size = 28, className }: Props) {
     strokeWidth: 2,
     strokeLinecap: 'round' as const,
     strokeLinejoin: 'round' as const,
+    'aria-hidden': true,
+    focusable: false,
   };
 
   switch (name) {

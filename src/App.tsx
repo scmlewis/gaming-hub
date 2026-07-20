@@ -18,6 +18,7 @@ function GameFallback() {
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: '100vh',
+        minHeight: '100dvh',
         fontFamily: 'var(--font-display)',
         color: 'var(--text-tertiary)',
         fontSize: '18px',
